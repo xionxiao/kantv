@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2021-2023, zhou.weiguo(zhouwg2000@gmail.com)
-# Copyright (c) 2021-2023, Project KanTV
-# Copyright (c) 2024- KanTV Authors
+# Copyright (c) 2021- KanTV Authors
 
 # Description: top level build script for entire project
 
@@ -49,47 +47,6 @@ function build_kantvcore
     cd ${PROJECT_ROOT_PATH}
     show_pwd
     echo "build kantvcore for target ${BUILD_TARGET} with arch ${BUILD_ARCHS} in ${PROJECT_BUILD_TYPE} mode"
-}
-
-
-function build_ggml_x86
-{
-    cd ${PROJECT_ROOT_PATH}/core/ggml/whispercpp
-    show_pwd
-
-    echo ""
-    echo ""
-    echo -e "------------------------------------------------------------------------------------------\n"
-
-    echo -e "${TEXT_BLUE}build ggml regular tool for target x86${TEXT_RESET}"
-    make
-
-    if [ -f main ]; then
-        /bin/cp -fv main     ${FF_PREFIX}/bin/
-    fi
-
-    if [ -f bench ]; then
-        /bin/cp -fv bench    ${FF_PREFIX}/bin/
-    fi
-
-    if [ -f quantize ]; then
-        /bin/cp -fv quantize ${FF_PREFIX}/bin/
-    fi
-
-    cd ${PROJECT_ROOT_PATH}/core/ggml/llamacpp
-    show_pwd
-    make
-
-    cd ${PROJECT_ROOT_PATH}/
-    echo ""
-    echo ""
-    echo -e "------------------------------------------------------------------------------------------\n"
-    echo ""
-    echo ""
-    ls -l ${FF_PREFIX}/bin/
-    echo -e "------------------------------------------------------------------------------------------\n"
-
-    cd -
 }
 
 
@@ -247,11 +204,6 @@ function do_buildlinux()
     #make ff-encode happy
     /bin/cp -fv ${FF_PREFIX}/bin/ffplay  ./
     /bin/cp -fv ${FF_PREFIX}/bin/ffprobe ./
-
-    cd ${PROJECT_ROOT_PATH}/
-    build_ggml_x86
-
-
 }
 
 

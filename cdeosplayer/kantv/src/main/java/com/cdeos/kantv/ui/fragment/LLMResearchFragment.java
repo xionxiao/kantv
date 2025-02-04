@@ -91,8 +91,8 @@
      private int nThreadCounts = 8;
      private int benchmarkIndex = 0;
 
-     private String strBackend = "cpu";
-     private int backendIndex = 0; //QNN_CPU
+     private String strBackend = "ggml";
+     private int backendIndex = 3; //ggml
 
      private long beginTime = 0;
      private long endTime = 0;
@@ -104,39 +104,10 @@
      private AtomicBoolean isBenchmarking = new AtomicBoolean(false);
      private ProgressDialog mProgressDialog;
 
-     // https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF/tree/main
-     // https://huggingface.co/TheBloke/Llama-2-7B-GGUF
-     // https://huggingface.co/TheBloke/Llama-2-13B-GGUF
-     // https://huggingface.co/TheBloke/Llama-2-70B-GGUF
-     // https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF
-     // https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF
-     // https://huggingface.co/TheBloke/Llama-2-70B-Chat-GGUF
-
-
-     // https://huggingface.co/Qwen/Qwen1.5-1.8B-Chat-GGUF/resolve/main/qwen1_5-1_8b-chat-q4_0.gguf   //1.1 GB
-
-
-     // https://huggingface.co/TheBloke/blossom-v3-baichuan2-7B-GGUF
-     // https://huggingface.co/shaowenchen/baichuan2-7b-chat-gguf
-     // https://huggingface.co/TheBloke/blossom-v3-baichuan2-7B-GGUF/blob/main/blossom-v3-baichuan2-7b.Q4_K_M.gguf // 4.61 GB
-
-
-     // https://huggingface.co/mlabonne/gemma-2b-GGUF/tree/main
-     // https://huggingface.co/mlabonne/gemma-2b-GGUF/resolve/main/gemma-2b.Q4_K_M.gguf  // 1.5 GB
-     // https://huggingface.co/mlabonne/gemma-2b-GGUF/resolve/main/gemma-2b.Q8_0.gguf    // 2.67 GB
-
-     // https://huggingface.co/TheBloke/Yi-34B-Chat-GGUF/tree/main
-     // https://huggingface.co/second-state/Yi-34B-Chat-GGUF/blob/a93fd377944179153cc8477eef2e69645c1a8ff9/Yi-34B-Chat-Q2_K.gguf // 12.8 GB
-
-
-     //private String ggmlModelFileName = "llama-2-7b.Q4_K_M.gguf";    //4.08 GB
-     //private String ggmlModelFileName = "llama-2-7b-chat.Q4_K_M.gguf"; //4.08 GB
-     //private String ggmlModelFileName = "qwen1_5-1_8b-chat-q4_0.gguf"; // 1.1 GB
-     //private String ggmlModelFileName = "baichuan2-7b.Q4_K_M.gguf"; // 4.61 GB
-     //private String ggmlModelFileName = "gemma-2b.Q4_K_M.gguf";  // 1.5 GB
-
      //https://huggingface.co/ggerganov/gemma-2b-Q8_0-GGUF/resolve/main/gemma-2b.Q8_0.gguf // 2.67 GB
      private String ggmlModelFileName = "gemma-2b.Q8_0.gguf";    // 2.67 GB
+
+     //https://huggingface.co/ggml-org/DeepSeek-R1-Distill-Qwen-1.5B-Q4_0-GGUF/blob/main/deepseek-r1-distill-qwen-1.5b-q4_0.gguf //1.07 GB
 
      private Context mContext;
      private Activity mActivity;
@@ -250,7 +221,7 @@
 
              }
          });
-         spinnerBackend.setSelection(0);
+         spinnerBackend.setSelection(3);
 
          _btnInference.setOnClickListener(v -> {
              String strPrompt = _txtUserInput.getText().toString();
@@ -288,7 +259,7 @@
 
              isBenchmarking.set(true);
 
-             Toast.makeText(mContext, "GGML's LLAMA inference is launched", Toast.LENGTH_LONG).show();
+             Toast.makeText(mContext, "LLM inference is launched", Toast.LENGTH_LONG).show();
 
              _txtLLMInfo.setText("");
              _btnInference.setEnabled(false);
@@ -315,7 +286,7 @@
 
                  while (isBenchmarking.get()) {
                      beginTime = System.currentTimeMillis();
-                     _txtGGMLStatus.setText("LLAMA inference is progressing...");
+                     _txtGGMLStatus.setText("LLM inference is progressing...");
                      strBenchmarkInfo = ggmljava.llm_inference(
                              CDEUtils.getDataPath() + ggmlModelFileName,
                              strUserInput,
@@ -328,7 +299,7 @@
                      mActivity.runOnUiThread(new Runnable() {
                          @Override
                          public void run() {
-                             String benchmarkTip = "LLAMA inference " + "(model: " + ggmlModelFileName
+                             String benchmarkTip = "LLM inference " + "(model: " + ggmlModelFileName
                                      + " ,threads: " + nThreadCounts + " , backend: " + CDEUtils.getGGMLBackendDesc(backendIndex)
                                      + " ) cost " + duration + " milliseconds";
 

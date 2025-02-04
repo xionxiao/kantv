@@ -35,7 +35,7 @@ enum QNNBackend {
     QNN_BACKEND_GGML, //"fake" QNN backend just for compare performance between QNN and original GGML
 };
 
-GGML_API int            ggml_backend_qnn_reg_devices(void);
+GGML_BACKEND_API int            ggml_backend_qnn_reg_devices(void);
 
 /**
  *
@@ -43,17 +43,27 @@ GGML_API int            ggml_backend_qnn_reg_devices(void);
  * @param qnn_lib_path      qnn library path, such as "/data/local/tmp/" on Android or specified in JNI layer
  * @return
  */
-GGML_API ggml_backend_t ggml_backend_qnn_init(size_t dev_num, const char * qnn_lib_path);
+GGML_BACKEND_API ggml_backend_t ggml_backend_qnn_init(size_t dev_num, const char * qnn_lib_path);
 
-GGML_API bool           ggml_backend_is_qnn(ggml_backend_t backend);
+GGML_BACKEND_API bool           ggml_backend_is_qnn(ggml_backend_t backend);
 
-GGML_API void           ggml_backend_qnn_set_n_threads(ggml_backend_t backend, int thread_counts);
+GGML_BACKEND_API void           ggml_backend_qnn_set_n_threads(ggml_backend_t backend, int thread_counts);
 
-GGML_API int            ggml_backend_qnn_get_device_count(void);
+GGML_BACKEND_API int            ggml_backend_qnn_get_device_count(void);
 
-GGML_API void           ggml_backend_qnn_get_device_description(size_t dev_num, char * description, size_t description_size);
+GGML_BACKEND_API void           ggml_backend_qnn_get_device_description(size_t dev_num, char * description, size_t description_size);
 
-GGML_API ggml_backend_buffer_type_t ggml_backend_qnn_buffer_type(size_t dev_num);
+GGML_BACKEND_API ggml_backend_buffer_type_t ggml_backend_qnn_buffer_type(size_t dev_num);
+
+inline const char * ggml_backend_qnn_get_devname(size_t dev_num) {
+    switch (dev_num) {
+        case QNN_BACKEND_CPU: return "QNN_CPU";
+        case QNN_BACKEND_GPU: return "QNN_GPU";
+        case QNN_BACKEND_NPU: return "QNN_NPU";
+        case QNN_BACKEND_GGML:return "ggml";
+        default:              return "unknown";
+    }
+}
 
 #ifdef __cplusplus
 }

@@ -24,7 +24,7 @@
 #include "kantv-asr.h"
 #include "ggml-jni.h"
 
-#include "llamacpp/include/ggml-qnn.h"
+#include "llamacpp/ggml/include/ggml-qnn.h"
 
 #define UNUSED(x)       (void)(x)
 
@@ -90,6 +90,14 @@ Java_org_ggml_ggmljava_ggml_1bench(JNIEnv *env, jclass clazz, jstring model_path
         LOGGW("pls check backend type\n");
         goto failure;
     }
+
+#ifdef GGML_DISABLE_QNN
+    if (QNN_BACKEND_GGML != backend_type) {
+        LOGGW("QNN backend %s is disabled and only ggml backend is supported\n", ggml_backend_qnn_get_devname(backend_type));
+        GGML_JNI_NOTIFY("QNN backend %s is disabled and only ggml backend is supported\n", ggml_backend_qnn_get_devname(backend_type));
+        goto failure;
+    }
+#endif
 
     if (0 == num_threads)
         num_threads = 1;
@@ -252,6 +260,20 @@ Java_org_ggml_ggmljava_llm_1inference(JNIEnv *env, jclass clazz, jstring model_p
     LOGGV("thread counts:%d\n", n_thread_counts);
     LOGGV("backend type:%d\n", n_backend);
 
+    if (n_bench_type >= GGML_BENCHMARK_MAX) {
+        LOGGW("pls check bench type\n");
+        GGML_JNI_NOTIFY("ggml benchmark type %d not supported currently", n_bench_type);
+        goto failure;
+    }
+
+#ifdef GGML_DISABLE_QNN
+    if (n_backend != QNN_BACKEND_GGML) {
+        LOGGW("QNN backend %s is disabled and only ggml backend is supported\n", ggml_backend_qnn_get_devname(n_backend));
+        GGML_JNI_NOTIFY("QNN backend %s is disabled and only ggml backend is supported\n", ggml_backend_qnn_get_devname(n_backend));
+        goto failure;
+    }
+#endif
+
     if (0 == n_thread_counts)
         n_thread_counts = 1;
 
@@ -270,25 +292,6 @@ failure:
     jstring string = (*env)->NewStringUTF(env, sz_bench_result);
 
     return string;
-}
-
-
-void  ggml_jni_notify_c_impl(const char * format,  ...) {
-    static unsigned char s_ggml_jni_buf[JNI_BUF_LEN];
-
-    va_list va;
-    int len_content = 0;
-
-    memset(s_ggml_jni_buf, 0, JNI_BUF_LEN);
-
-    va_start(va, format);
-
-    len_content = vsnprintf(s_ggml_jni_buf, JNI_BUF_LEN, format, va);
-    snprintf(s_ggml_jni_buf + len_content, JNI_BUF_LEN - len_content, "\n");
-
-    kantv_asr_notify_benchmark_c(s_ggml_jni_buf);
-
-    va_end(va);
 }
 
 
@@ -338,6 +341,14 @@ Java_org_ggml_ggmljava_ggml_1bench_1m(JNIEnv *env, jclass clazz, jstring model_p
         goto failure;
     }
 
+#ifdef GGML_DISABLE_QNN
+    if (n_backend_type != QNN_BACKEND_GGML) {
+        LOGGW("QNN backend %s is disabled and only ggml backend is supported\n", ggml_backend_qnn_get_devname(n_backend_type));
+        GGML_JNI_NOTIFY("QNN backend %s is disabled and only ggml backend is supported\n", ggml_backend_qnn_get_devname(n_backend_type));
+        goto failure;
+    }
+#endif
+
     if (0 == n_thread_counts)
         n_thread_counts = 1;
 
@@ -361,4 +372,22 @@ Java_org_ggml_ggmljava_ggml_1bench_1m(JNIEnv *env, jclass clazz, jstring model_p
     jstring string = (*env)->NewStringUTF(env, sz_bench_result);
 
     return string;
+}
+
+void  ggml_jni_notify_c_impl(const char * format,  ...) {
+    static unsigned char s_ggml_jni_buf[JNI_BUF_LEN];
+
+    va_list va;
+    int len_content = 0;
+
+    memset(s_ggml_jni_buf, 0, JNI_BUF_LEN);
+
+    va_start(va, format);
+
+    len_content = vsnprintf(s_ggml_jni_buf, JNI_BUF_LEN, format, va);
+    snprintf(s_ggml_jni_buf + len_content, JNI_BUF_LEN - len_content, "\n");
+
+    kantv_asr_notify_benchmark_c(s_ggml_jni_buf);
+
+    va_end(va);
 }

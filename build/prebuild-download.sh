@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2024- KanTV Authors
+# Copyright (c) 2021- KanTV Authors
 
 # Description: download Android NDK for build project
 

@@ -92,11 +92,7 @@ extern "C" {
 
 #include "llama.h"
 
-#ifdef GGML_USE_QNN
-
-#include "ggml-qnn.h"
-
-#endif
+#include "llamacpp/ggml/include/ggml-qnn.h"
 
 
 // =================================================================================================
@@ -110,22 +106,6 @@ extern "C" {
 #include "sampling.h"
 
 #define log_tostr(var) log_var_to_string_impl(var).c_str()
-
-static const char *get_qnn_backend_name(int n_backend_type) {
-    switch (n_backend_type) {
-        case 0:
-            return "QNN-CPU";
-        case 1:
-            return "QNN-GPU";
-        case 2:
-            return "QNN-NPU(HTP/DSP)";
-        case 3:
-            return "ggml";
-        default:
-            return "unknown";
-    }
-}
-
 
 static bool ggml_graph_compute_helper(
         struct ggml_backend *backend,
@@ -866,9 +846,9 @@ void ggml_bench_matrix(int num_threads, int backend_type) {
     n_end_time = ggml_time_us();
     n_durtion = (n_end_time - n_begin_time) / 1000;
     LOGGD("duration of matrix with backend %d(%s) is: %lld milliseconds\n", backend_type,
-          get_qnn_backend_name(backend_type), n_durtion);
+          ggml_backend_qnn_get_devname(backend_type), n_durtion);
     GGML_JNI_NOTIFY("duration of matrix with backend %d(%s) is: %lld milliseconds\n", backend_type,
-                    get_qnn_backend_name(backend_type), n_durtion);
+                    ggml_backend_qnn_get_devname(backend_type), n_durtion);
     ggml_free(ctx);
     ggml_backend_buffer_free(buffer);
     ggml_backend_free(backend);
@@ -5753,9 +5733,9 @@ int qnn_matrix(int n_backend_type, int n_op_type) {
     n_begin_time = ggml_time_us();
     LOGGD("enter qnn_matrix\n");
     LOGGI("qnn matrix addition operation, backend type:%d(%s), op type:%d\n",
-          n_backend_type, get_qnn_backend_name(n_backend_type), n_op_type);
+          n_backend_type, ggml_backend_qnn_get_devname(n_backend_type), n_op_type);
     GGML_JNI_NOTIFY("qnn matrix addition operation, backend_type:%d(%s), op type:%d",
-                    n_backend_type, get_qnn_backend_name(n_backend_type), n_op_type);
+                    n_backend_type, ggml_backend_qnn_get_devname(n_backend_type), n_op_type);
 
     switch (n_backend_type) {
         case QNN_BACKEND_CPU:
@@ -5881,9 +5861,9 @@ int qnn_matrix(int n_backend_type, int n_op_type) {
     result = qnn_backend.qnn_init(nullptr);
     if (0 != result) {
         LOGGW("init qnn subsystem failed with qnn backend %s, pls check why\n",
-              get_qnn_backend_name(n_backend_type));
+              ggml_backend_qnn_get_devname(n_backend_type));
         GGML_JNI_NOTIFY("init qnn subsystem failed with qnn backend %s, pls check why\n",
-                        get_qnn_backend_name(n_backend_type));
+                        ggml_backend_qnn_get_devname(n_backend_type));
         result = 1;
         return 1;
     }
@@ -6173,9 +6153,9 @@ int qnn_ggml(int n_backend_type, int n_ggml_op_type) {
 
     LOGGD("enter qnn_ggml\n");
     LOGGI("[%s], backend type:%d(%s), op type:%d\n", __func__,
-          n_backend_type, get_qnn_backend_name(n_backend_type), n_ggml_op_type);
+          n_backend_type, ggml_backend_qnn_get_devname(n_backend_type), n_ggml_op_type);
     GGML_JNI_NOTIFY("[%s], backend_type:%d(%s), ggml op type:%d", __func__,
-                    n_backend_type, get_qnn_backend_name(n_backend_type), n_ggml_op_type);
+                    n_backend_type, ggml_backend_qnn_get_devname(n_backend_type), n_ggml_op_type);
     switch (n_backend_type) {
         case 0:
             qnn_backend_lib = "libQnnCpu.so";
@@ -6440,9 +6420,9 @@ int qnn_ggml(int n_backend_type, int n_ggml_op_type) {
     n_end_time = ggml_time_us();
     n_durtion = (n_end_time - n_begin_time) / 1000;
     LOGGD("duration of qnn_ggml with qnn backend %s is: %lld milliseconds\n",
-          get_qnn_backend_name(n_backend_type), n_durtion);
+          ggml_backend_qnn_get_devname(n_backend_type), n_durtion);
     GGML_JNI_NOTIFY("duration of qnn_ggml with qnn backend %s is: %lld milliseconds\n",
-                    get_qnn_backend_name(n_backend_type), n_durtion);
+                    ggml_backend_qnn_get_devname(n_backend_type), n_durtion);
 
 
     LOGGD("leave qnn_ggml\n");
@@ -6471,9 +6451,9 @@ static int qnn_complex_graph_inception(int n_backend_type, int n_graph_type) {
     n_graph_type = 1; //TODO: hardcode to 1
 
     LOGGI("[%s], backend type:%d(%s), graph type:%d\n", __func__,
-          n_backend_type, get_qnn_backend_name(n_backend_type), n_graph_type);
+          n_backend_type, ggml_backend_qnn_get_devname(n_backend_type), n_graph_type);
     GGML_JNI_NOTIFY("[%s], backend_type:%d(%s), graph type:%d", __func__,
-                    n_backend_type, get_qnn_backend_name(n_backend_type), n_graph_type);
+                    n_backend_type, ggml_backend_qnn_get_devname(n_backend_type), n_graph_type);
 
     qnn_implementation qnn_backend = qnn_implementation("/data/data/com.cdeos.kantv/qnnlib/",
                                                         qnn_backend_lib, "");
@@ -6836,10 +6816,10 @@ static int qnn_complex_graph_inception(int n_backend_type, int n_graph_type) {
     n_end_time = ggml_time_us();
     n_durtion = (n_end_time - n_begin_time) / 1000;
     LOGGD("duration of qnn_complex_graph_inception with qnn backend %s is: %lld milliseconds\n",
-          get_qnn_backend_name(n_backend_type), n_durtion);
+          ggml_backend_qnn_get_devname(n_backend_type), n_durtion);
     GGML_JNI_NOTIFY(
             "duration of qnn_complex_graph_inception with qnn backend %s is: %lld milliseconds\n",
-            get_qnn_backend_name(n_backend_type), n_durtion);
+            ggml_backend_qnn_get_devname(n_backend_type), n_durtion);
 
     LOGGD("leave qnn_complex_graph_inception\n");
 
@@ -6858,9 +6838,9 @@ int qnn_complex_graph(int n_backend_type, int n_graph_type) {
     n_begin_time = ggml_time_us();
     LOGGD("enter qnn_complex_graph\n");
     LOGGI("[%s], backend type:%d(%s), graph type:%d\n", __func__,
-          n_backend_type, get_qnn_backend_name(n_backend_type), n_graph_type);
+          n_backend_type, ggml_backend_qnn_get_devname(n_backend_type), n_graph_type);
     GGML_JNI_NOTIFY("[%s], backend_type:%d(%s), graph type:%d", __func__,
-                    n_backend_type, get_qnn_backend_name(n_backend_type), n_graph_type);
+                    n_backend_type, ggml_backend_qnn_get_devname(n_backend_type), n_graph_type);
 
     switch (n_graph_type) {
         case 0: // MNIST CV inference of digital number, https://github.com/StudyingLover/ggml-tutorial
@@ -6880,9 +6860,9 @@ int qnn_complex_graph(int n_backend_type, int n_graph_type) {
     n_end_time = ggml_time_us();
     n_durtion = (n_end_time - n_begin_time) / 1000;
     LOGGD("duration of qnn_complex_graph with qnn backend %s is: %lld milliseconds\n",
-          get_qnn_backend_name(n_backend_type), n_durtion);
+          ggml_backend_qnn_get_devname(n_backend_type), n_durtion);
     GGML_JNI_NOTIFY("duration of qnn_complex_graph with qnn backend %s is: %lld milliseconds\n",
-                    get_qnn_backend_name(n_backend_type), n_durtion);
+                    ggml_backend_qnn_get_devname(n_backend_type), n_durtion);
     LOGGD("leave qnn_complex_graph\n");
 
     return result;
@@ -6987,7 +6967,7 @@ int qnn_ggml_op(const char *model_path, int num_threads, int n_backend_type, int
     LOGGD("enter qnn_ggml_op\n");
     LOGGI("mode path:%s", model_path);
     LOGGI("num_threads:%d", num_threads);
-    LOGGI("backend_type:%d(%s)", n_backend_type, get_qnn_backend_name(n_backend_type));
+    LOGGI("backend_type:%d(%s)", n_backend_type, ggml_backend_qnn_get_devname(n_backend_type));
     LOGGI("ggml op:%d(%s)", n_ggml_op_type, ggml_op_name((enum ggml_op) n_ggml_op_type));
 
     GGML_JNI_NOTIFY("starting qnn_ggml_op UT(unit test)\n");
@@ -7032,9 +7012,9 @@ int qnn_ggml_op(const char *model_path, int num_threads, int n_backend_type, int
                                         "/data/data/com.cdeos.kantv/qnnlib/"); // the second param can be got by JNI from Java layer
         if (nullptr == backend) {
             LOGGD("create qnn backend %d(%s) failed", n_backend_type,
-                  get_qnn_backend_name(n_backend_type));
+                  ggml_backend_qnn_get_devname(n_backend_type));
             GGML_JNI_NOTIFY("create qnn backend %d(%s) failed", n_backend_type,
-                            get_qnn_backend_name(n_backend_type));
+                            ggml_backend_qnn_get_devname(n_backend_type));
             return 1;
         }
         //ggml_backend_qnn_set_n_threads(backend, 1);
@@ -7078,10 +7058,10 @@ int qnn_ggml_op(const char *model_path, int num_threads, int n_backend_type, int
         default:
             LOGGD("ggml op %d(%s) not supported  with backend %d(%s)", n_ggml_op_type,
                   ggml_op_name((enum ggml_op) n_ggml_op_type), n_backend_type,
-                  get_qnn_backend_name(n_backend_type));
+                  ggml_backend_qnn_get_devname(n_backend_type));
             GGML_JNI_NOTIFY("ggml op %d(%s) not supported  with backend %d(%s)", n_ggml_op_type,
                             ggml_op_name((enum ggml_op) n_ggml_op_type), n_backend_type,
-                            get_qnn_backend_name(n_backend_type));
+                            ggml_backend_qnn_get_devname(n_backend_type));
             LOGGD("leave qnn_ggml_op UT(unit test)\n");
             ggml_free(ctx);
             ggml_backend_free(backend);
@@ -7170,10 +7150,10 @@ int qnn_ggml_op(const char *model_path, int num_threads, int n_backend_type, int
     n_durtion = (n_end_time - n_begin_time) / 1000;
     LOGGD("duration of qnn_ggml_op %d(%s) with backend %d(%s) is: %lld milliseconds\n",
           n_ggml_op_type, ggml_op_name((enum ggml_op) n_ggml_op_type), n_backend_type,
-          get_qnn_backend_name(n_backend_type), n_durtion);
+          ggml_backend_qnn_get_devname(n_backend_type), n_durtion);
     GGML_JNI_NOTIFY("duration of qnn_ggml_op %d(%s) with backend %d(%s) is: %lld milliseconds\n",
                     n_ggml_op_type, ggml_op_name((enum ggml_op) n_ggml_op_type), n_backend_type,
-                    get_qnn_backend_name(n_backend_type), n_durtion);
+                    ggml_backend_qnn_get_devname(n_backend_type), n_durtion);
     LOGGD("leave qnn_ggml_op UT(unit test)\n");
 
     return 0;
@@ -7198,7 +7178,7 @@ int qnn_ggml_op_automation_ut(const char *model_path, int num_threads, int n_bac
     LOGGD("enter qnn_ggml_op_automation_ut\n");
     LOGGI("mode path:%s", model_path);
     LOGGI("num_threads:%d", num_threads);
-    LOGGI("backend_type:%d(%s)", n_backend_type, get_qnn_backend_name(n_backend_type));
+    LOGGI("backend_type:%d(%s)", n_backend_type, ggml_backend_qnn_get_devname(n_backend_type));
     LOGGI("ggml op:%d(%s)", n_ggml_op_type, ggml_op_name((enum ggml_op) n_ggml_op_type));
     GGML_JNI_NOTIFY("starting qnn_ggml_op_automation_ut(automation unit test)\n");
 
@@ -7211,10 +7191,10 @@ int qnn_ggml_op_automation_ut(const char *model_path, int num_threads, int n_bac
     if (!support_ops) {
         LOGGD("ggml op %d(%s) not supported  with backend %d(%s)", n_ggml_op_type,
               ggml_op_name((enum ggml_op) n_ggml_op_type), n_backend_type,
-              get_qnn_backend_name(n_backend_type));
+              ggml_backend_qnn_get_devname(n_backend_type));
         GGML_JNI_NOTIFY("ggml op %d(%s) not supported  with backend %d(%s)", n_ggml_op_type,
                         ggml_op_name((enum ggml_op) n_ggml_op_type), n_backend_type,
-                        get_qnn_backend_name(n_backend_type));
+                        ggml_backend_qnn_get_devname(n_backend_type));
         LOGGD("leave qnn_ggml_op UT(unit test)\n");
 
         return 1;
@@ -7311,9 +7291,9 @@ int qnn_ggml_op_automation_ut(const char *model_path, int num_threads, int n_bac
                                                 "/data/data/com.cdeos.kantv/qnnlib/"); // the second param can be got by JNI from Java layer
                 if (nullptr == backend) {
                     LOGGD("create qnn backend %d(%s) failed", n_backend_type,
-                          get_qnn_backend_name(n_backend_type));
+                          ggml_backend_qnn_get_devname(n_backend_type));
                     GGML_JNI_NOTIFY("create qnn backend %d(%s) failed", n_backend_type,
-                                    get_qnn_backend_name(n_backend_type));
+                                    ggml_backend_qnn_get_devname(n_backend_type));
                     return 1;
                 }
             }
@@ -7440,11 +7420,11 @@ int qnn_ggml_op_automation_ut(const char *model_path, int num_threads, int n_bac
     n_durtion = (n_end_time - n_begin_time) / 1000;
     LOGGD("duration of qnn_ggml_op_automation_ut %d(%s) with backend %d(%s) is: %lld milliseconds\n",
           n_ggml_op_type, ggml_op_name((enum ggml_op) n_ggml_op_type), n_backend_type,
-          get_qnn_backend_name(n_backend_type), n_durtion);
+          ggml_backend_qnn_get_devname(n_backend_type), n_durtion);
     GGML_JNI_NOTIFY(
             "duration of qnn_ggml_op_automation_ut %d(%s) with backend %d(%s) is: %lld milliseconds\n",
             n_ggml_op_type, ggml_op_name((enum ggml_op) n_ggml_op_type), n_backend_type,
-            get_qnn_backend_name(n_backend_type), n_durtion);
+            ggml_backend_qnn_get_devname(n_backend_type), n_durtion);
     LOGGD("leave qnn_ggml_op_automation_ut(automation unit test)\n");
 
     return 0;
@@ -7472,8 +7452,8 @@ int llama_inference_ng(const char *sz_model_path, const char *sz_user_data, int 
                           "-p", sz_user_data,
                           "-t", std::to_string(n_threads).c_str()
     };
-    //ret = llama_inference_main(argc, const_cast<char **>(argv), n_backend_type);
-    GGML_JNI_NOTIFY("LLM not supported");
+    ret = llama_inference_main(argc, const_cast<char **>(argv), n_backend_type);
+    GGML_JNI_NOTIFY("LLM inference not supported");
     ret = 0;
 
     return ret;

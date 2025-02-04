@@ -840,18 +840,6 @@ void ggml_jni_bench(const char * sz_model_path, const char * sz_user_data, int n
     }
 #endif
 
-#ifdef GGML_USE_QNN
-    if (GGML_BACKEND_GGML != n_backend_type) {
-        LOGGW("QNN feature was disabled and backend is not ggml\n");
-        GGML_JNI_NOTIFY("QNN feature was disabled and backend is not ggml\n");
-        return;
-    }
-#endif
-    if (n_backend_type != 3) {
-        GGML_JNI_NOTIFY("QNN feature was disabled and backend is not ggml\n");
-        return;
-    }
-
     p_asr_ctx->n_threads                = n_threads;
     p_asr_ctx->n_benchmark_type         = n_bench_type;
     memset(p_asr_ctx->sz_model_path, 0, MAX_PATH_LEN);

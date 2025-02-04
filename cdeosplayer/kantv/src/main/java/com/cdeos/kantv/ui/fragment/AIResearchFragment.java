@@ -165,22 +165,10 @@
      //for users outside of China, https://huggingface.co/openbmb/MiniCPM-Llama3-V-2_5-gguf/tree/main
      private String ggmlMiniCPMVModelFile = "ggml-model-Q4_K_M.gguf";
 
-     // https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF/tree/main
-     // https://huggingface.co/TheBloke/Llama-2-7B-GGUF
-     // https://huggingface.co/TheBloke/Llama-2-13B-GGUF
-     // https://huggingface.co/TheBloke/Llama-2-70B-GGUF
-     // https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF
-     // https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF
-     // https://huggingface.co/TheBloke/Llama-2-70B-Chat-GGUF
-
-     //private String ggmlModelFileName = "llama-2-7b.Q4_K_M.gguf";    //4.08 GB
-     //private String ggmlModelFileName = "llama-2-7b-chat.Q4_K_M.gguf"; //4.08 GB
-     //private String ggmlModelFileName = "qwen1_5-1_8b-chat-q4_0.gguf"; // 1.1 GB
-     //private String ggmlModelFileName = "baichuan2-7b.Q4_K_M.gguf"; // 4.61 GB
-     //private String ggmlModelFileName = "gemma-2b.Q4_K_M.gguf";  // 1.5 GB
 
      //https://huggingface.co/ggerganov/gemma-2b-Q8_0-GGUF/resolve/main/gemma-2b.Q8_0.gguf // 2.67 GB
      //private String ggmlModelFileName = "gemma-2b.Q8_0.gguf";    // 2.67 GB
+     //https://huggingface.co/ggml-org/DeepSeek-R1-Distill-Qwen-1.5B-Q4_0-GGUF/blob/main/deepseek-r1-distill-qwen-1.5b-q4_0.gguf //1.07 GB
      private String strUserInput = "introduce the movie Once Upon a Time in America briefly.\n";
 
      private Context mContext;

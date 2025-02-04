@@ -54,6 +54,16 @@ static std::vector<const char *> g_col = {
     "",
 };
 
+extern "C" {
+#if (defined __ANDROID__) || (defined ANDROID)
+extern int __android_log_print(int prio, const char *tag, const char *fmt, ...)
+#if defined(__GNUC__)
+__attribute__ ((format(printf, 3, 4)))
+#endif
+;
+#endif
+}
+
 struct common_log_entry {
     enum ggml_log_level level;
 
@@ -103,8 +113,12 @@ struct common_log_entry {
                     break;
             }
         }
+#if (defined __ANDROID__) || (defined ANDROID)
+        __android_log_print(GGML_LOG_LEVEL_INFO, "KANTV", "%s", msg.data());
 
+#else
         fprintf(fcur, "%s", msg.data());
+#endif
 
         if (level == GGML_LOG_LEVEL_WARN || level == GGML_LOG_LEVEL_ERROR || level == GGML_LOG_LEVEL_DEBUG) {
             fprintf(fcur, "%s", g_col[COMMON_LOG_COL_DEFAULT]);
