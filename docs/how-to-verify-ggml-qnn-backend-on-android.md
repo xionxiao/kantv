@@ -2,6 +2,9 @@
 
 ```
 
+git clone https://github.com/zhouwg/kantv.git
+cd kantv
+git checkout kantv-1.5.0-pre-focuson-ggml-on-20250129
 cd ${PROJECT_ROOT_PATH}
 
 . build/envsetup.sh
@@ -17,9 +20,9 @@ ensure an Android phone/device has been connected to the dev machine and adb con
 ```
 cd core/ggml/llamacpp/tests/ggml-qnn/
 
-./build-ggml-qnn.sh
+./ggml-qnn-ut-build-run.sh build
 
-./run-ggml-qnn.sh
+./ggml-qnn-ut-build-run.sh GGML_OP_ADD 0
 ```
 
 
