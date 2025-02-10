@@ -264,6 +264,13 @@ here is a screenshot to demostrate ASR inference by running the excellent <a hre
   </ol>
 </details>
 
+### Highlight
+
+implementation of <a href="./README-qnn.md">ggml-qnn</a>(might be the first open-source implementation in the <a href="https://github.com/ggerganov/llama.cpp">llama.cpp</a> community)
+
+https://github.com/zhouwg/kantv/issues/121
+
+https://github.com/zhouwg/kantv/issues/246
 
 ### Hot topics
 
