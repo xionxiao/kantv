@@ -45,7 +45,7 @@ Qualcomm® AI Engine Direct API and the associated software stack provides all t
 
 ### Llama.cpp + QNN
 
-The llama.cpp QNN backend is intented to support **Qualcomm mobile SoC** firstly.
+The llama.cpp QNN backend(aka ggml-qnn backend) is intented to support **Qualcomm mobile SoC** firstly.
 
 
 ## News
@@ -62,10 +62,11 @@ The llama.cpp QNN backend is intented to support **Qualcomm mobile SoC** firstly
 - 2024.4.26
   - refine PR according to coding stye and pricinples of upstream ggml community
   - add command line test using <a href="https://github.com/ggerganov/llama.cpp/blob/master/tests/test-backend-ops.cpp">test-backend-ops.cpp</a>
-  - refine PR according comments from reviewer
+  - refine PR according to comments from reviewer
+
 - 2024.4.24
   - a very beginning <a href="https://github.com/ggerganov/llama.cpp/pull/6869">PR to upstream ggml community</a>
-  - data path works fine as expected with whisper.cpp and llama.cpp using QNN backend and verified on both low-end and high-end Android phones based on Qualcomm mobile SoC
+  - data path works fine as expected by <a href="https://github.com/ggerganov/llama.cpp/pull/7641">a workaround approach which not accepted by the author of ggml backend subsystem</a> with whisper.cpp and llama.cpp using QNN backend and verified on both low-end and high-end Android phones based on Qualcomm mobile SoC
   - Support OPs
     - GGML_OP_ADD
     - GGML_OP_MUL
@@ -127,7 +128,6 @@ Any **mainstream** Android phone equipped with Qualcomm's mobile SoC should be s
   ./build-run-android.sh updateqnnlib   (upload Qualcomm's QNN binary runtime libs to Android phone)
   ./build-run-android.sh run            (running llama-cli on Android pohone)
   ./build-run-android.sh run_testop     (running test-backend-ops on Android phone)
-  cd core/ggml/llamacpp/tests/ggml-qnn/
 
 ```
 
