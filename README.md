@@ -228,7 +228,7 @@ cd kantv
 
 ### Run Android APK on Android phone
 
-This project is a pure <b>learning&study</b> project, so the Android APK is a green Android APPand will <a href="./docs/compliance-statement.md">not collect/upload user data in Android device</a>. The Android APK should be works well on any Qualcomm mobile SoC equipped <b>mainstream</b> Android phone and the following permissions are required:
+This project is a <b>pure AI learning&study</b> project, so the Android APK is a green Android APP and will not collect/upload user data in Android device. The Android APK should be works well on any Qualcomm mobile SoC equipped <b>mainstream</b> Android phone and the following permissions are required:
 
 - Access to storage is required for ASR inference and LLM inference(read/load models from storage)
 - Access to device information is required to obtain phone's network status information, distinguishing whether the current network is Wi-Fi or mobile when playing online TV

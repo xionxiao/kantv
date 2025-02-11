@@ -1,4 +1,4 @@
-This project used for learning and practising real AI tech on Android device.
+This project used for learning and practising device-AI tech on Android device.
 
 The Android apk which built from the source codes of this project follows the principles of 'minimum permissions' and 'do not collect unnecessary user data'.
 
