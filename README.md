@@ -26,7 +26,7 @@ KanTV("Kan", aka Chinese PinYin "Kan" or Chinese HanZi "看" or English "watch/l
 
 ### Software architecture of KanTV Android
 
-![Image](https://github.com/user-attachments/assets/974a83f7-e49f-4346-9f4d-83d7eb897de8)
+![Image](https://github.com/user-attachments/assets/0ee33100-92da-43f7-baa6-7c4129525aba)
 
 
 ### How to build project
@@ -228,12 +228,10 @@ cd kantv
 
 ### Run Android APK on Android phone
 
-This project is a learning&research project, so the Android APK will <a href="./docs/compliance-statement.md">not collect/upload user data in Android device</a>. The Android APK should be works well on any <b>mainstream</b> Android phone(report issue in various Android phone to this project is greatly welcomed) and the following four permissions are required:
+This project is a pure <b>learning&study</b> project, so the Android APK is a green Android APPand will <a href="./docs/compliance-statement.md">not collect/upload user data in Android device</a>. The Android APK should be works well on any Qualcomm mobile SoC equipped <b>mainstream</b> Android phone and the following permissions are required:
 
-- Access to storage is required to generate necessary temporary files
-- Access to device information is required to obtain current phone network status information, distinguishing whether the current network is Wi-Fi or mobile when playing online TV
-- Access to camera is needed for AI Agent
-- Access to mic(audio recorder) is needed for AI Agent
+- Access to storage is required for ASR inference and LLM inference(read/load models from storage)
+- Access to device information is required to obtain phone's network status information, distinguishing whether the current network is Wi-Fi or mobile when playing online TV
 
 <hr>
 here is a short video to demostrate AI subtitle by running the great & excellent & amazing<a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a> on a Xiaomi 14 device - <b>fully offline, on-device</b>.
@@ -274,6 +272,10 @@ https://github.com/zhouwg/kantv/issues/246
 
 ### Hot topics
 
+- improve <a href="https://github.com/zhouwg/kantv/blob/master/core/ggml/llamacpp/ggml/src/ggml-qnn/ggml-qnn.cpp">ggml-qnn backend</a> on Android phone
+
+- porting <a href="https://github.com/zhouwg/kantv/blob/master/core/ggml/llamacpp/ggml/src/ggml-qnn/ggml-qnn.cpp">ggml-qnn backend</a> on WoA(Windows on ARM)
+
 - bugfix in UI layer(Java)
 
 - bugfix in native layer(C/C++)
@@ -290,9 +292,10 @@ Report issue in various Android-based phone or even submit PR to this project is
 
 ### Docs
 
-- [How to verify Qualcomm QNN backend for GGML on Qualcomm mobile SoC based android device](./docs/how-to-verify-ggml-qnn-backend-on-android.md)
+- [How to verify ggml-qnn backend on Qualcomm mobile SoC equipped Android phone](./README-qnn.md)
 - [How to integrate proprietary/open source codes to project KanTV for personal/proprietary/commercial R&D activity](https://github.com/zhouwg/kantv/issues/74)
 - [How to use whisper.cpp and ffmpeg to add subtitle to video](./docs/how-to-use-whispercpp-ffmpeg-add-subtitle-to-video.md)
+- [Authors](./AUTHORS)
 - [Acknowledgement](./docs/acknowledgement.md)
 - [ChangeLog](./release/README.md)
 

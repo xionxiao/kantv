@@ -397,7 +397,7 @@
 
     <string name="pref_key_authorinfo">pref.authorinfo</string>
     <string name="pref_title_authorinfo">Author\'s website</string>
-    <string name="pref_summary_authorinfo">www.cde-os.com</string>
+    <string name="pref_summary_authorinfo">www.cdeos.com</string>
 
     <string name="pref_key_ipr">pref.ipr</string>
     <string name="pref_title_ipr">IPR Statement</string>

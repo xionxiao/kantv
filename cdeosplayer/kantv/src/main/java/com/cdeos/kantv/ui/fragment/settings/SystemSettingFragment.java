@@ -225,7 +225,7 @@ public class SystemSettingFragment extends BaseSettingsFragment {
             findPreference("aboutauthorinfo").setOnPreferenceClickListener(preference -> {
                 Intent intent_about = new Intent(view.getContext(), WebViewActivity.class);
                 intent_about.putExtra("title", "official website");
-                intent_about.putExtra("link", "http://www.cde-os.com");
+                intent_about.putExtra("link", "http://www.cdeos.com");
                 startActivity(intent_about);
                 return true;
             });

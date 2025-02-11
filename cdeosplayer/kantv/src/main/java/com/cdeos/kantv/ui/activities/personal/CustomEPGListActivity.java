@@ -1,7 +1,5 @@
 /*
  * Copyright (C) 2019-2024 Project KanTV
- * Copyright (C) zhouwg <zhouwg@cde-os.com>
-
  */
 
 package com.cdeos.kantv.ui.activities.personal;

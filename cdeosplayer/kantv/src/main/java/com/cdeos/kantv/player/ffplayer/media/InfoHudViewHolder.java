@@ -357,7 +357,7 @@ public class InfoHudViewHolder {
                     }
 
                     if (!CDEUtils.getReleaseMode()) {
-                        tmpString = "媒体时长:" + CDEUtils.getVideoDuration(mMediaPlayer) + "   ," + mActivity.getBaseContext().getString(R.string.position_time)
+                        tmpString = "media duration:" + CDEUtils.getVideoDuration(mMediaPlayer) + "   ," + mActivity.getBaseContext().getString(R.string.position_time)
                                 + ":" + CDEUtils.getVideoPositiontime(mMediaPlayer);
                         tmpString = CDEUtils.convertLongString(tmpString, 30);
                         setRowValue(R.string.content_time, tmpString);

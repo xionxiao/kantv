@@ -30,7 +30,7 @@
             />
 
         <EditTextPreference
-            android:defaultValue="www.cde-os.com"
+            android:defaultValue="www.cdeos.com"
             android:enabled="true"
             android:key="@string/pref_key_kantvserver"
             android:persistent="true"

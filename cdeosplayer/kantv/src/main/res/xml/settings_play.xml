@@ -133,7 +133,7 @@
             android:widgetLayout="@layout/my_checkbox" />
 
         <EditTextPreference
-            android:defaultValue="rtmp://www.cde-os.com/live/livestream"
+            android:defaultValue="rtmp://www.cdeos.com/live/livestream"
             android:enabled="true"
             android:icon="@drawable/ic_app_setting_cache_path"
             android:key="@string/pref_key_rtmpserver"

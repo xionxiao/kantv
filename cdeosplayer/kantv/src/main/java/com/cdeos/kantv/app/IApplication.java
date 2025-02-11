@@ -442,9 +442,9 @@ public class IApplication extends Application {
         } else {
             CDELog.j(TAG, "it shouldn't happen, pls check config.json");
             key = mContext.getString(R.string.pref_key_kantvserver);
-            editor.putString(key, "www.cde-os.com");
+            editor.putString(key, "www.cdeos.com");
             editor.commit();
-            CDEUtils.updateKANTVServer("www.cde-os.com"); //use default value
+            CDEUtils.updateKANTVServer("www.cdeos.com"); //use default value
             CDELog.j(TAG, "kantv server:" + CDEUtils.getKANTVServer());
             CDELog.j(TAG, "kantv update apk url:" + CDEUtils.getKANTVUpdateAPKUrl());
             CDELog.j(TAG, "kantv update apk version url:" + CDEUtils.getKANTVUpdateVersionUrl());

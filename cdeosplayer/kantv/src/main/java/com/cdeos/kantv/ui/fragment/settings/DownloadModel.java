@@ -105,11 +105,8 @@
          localModleFileA = CDEUtils.getDataPath() + modelFileNameA;
          localModleFileB = CDEUtils.getDataPath() + modelFileNameB;
 
-         // http://www.cde-os.com/kantv/ggml/jfk.wav, available
+         // http://www.cdeos.com/kantv/ggml/jfk.wav, available
          remoteModleFileA = "http://" + CDEUtils.getKANTVMasterServer() + "/kantv/" + engineName + "/" + modelFileNameA;
-
-         // http://www.cde-os.com/kantv/ggml/ggml-***.bin, not available since 03-22-2024
-         // remoteModleFileB = "http://" + CDEUtils.getKANTVMasterServer() + "/kantv/" + engineName + "/" + modelFileNameB;
          // replace with upstream url since 03-22-2024
          // the GGML whispercpp model could be found at https://huggingface.co/ggerganov/whisper.cpp/tree/main
          remoteModleFileB = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/" + modelFileNameB;
