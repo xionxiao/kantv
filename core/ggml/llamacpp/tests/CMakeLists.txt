@@ -7,8 +7,8 @@ set(CMAKE_CXX_STANDARD              17)
 set(CMAKE_CXX_STANDARD_REQUIRED     ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-#set to ON if target Android phone is based on Qualcomm Snapdragon 8 Gen 3
-set(TARGET_SNAPDRAGON_8_GEN3        OFF)
+#set to ON if target Android phone is equipped with Qualcomm Snapdragon 8 Gen 3
+set(TARGET_SNAPDRAGON_8_GEN3        ON)
 
 set(QNN_INC_PATH                    ${QNN_SDK_PATH}/include/QNN)
 set(QNN_LIB_PATH                    ${QNN_SDK_PATH}/lib/aarch64-android)
