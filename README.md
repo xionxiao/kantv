@@ -23,6 +23,9 @@ KanTV("Kan", aka Chinese PinYin "Kan" or Chinese HanZi "看" or English "watch/l
 
 - Well-maintained <b>turn-key / self-contained</b> project for AI researchers(whom mightbe not familiar with <b>regular Android software development</b>)/developers/beginners focus on edge/device-side AI learning / R&D activity, some AI R&D activities (AI algorithm validation / AI model validation / performance benchmark in ASR, LLM, TTS, NLP, CV......field) could be done by Android Studio IDE + a powerful Android phone very easily
 
+### Highlight
+
+As far as I know, probably be the first <a href="https://github.com/zhouwg/kantv/issues/246">open-source implmentation of ggml-qnn</a>
 
 ### Software architecture of KanTV Android
 
@@ -262,19 +265,7 @@ here is a screenshot to demostrate ASR inference by running the excellent <a hre
   </ol>
 </details>
 
-### Highlight
-
-implementation of <a href="./README-qnn.md">ggml-qnn</a>(might be the first open-source implementation in the <a href="https://github.com/ggerganov/llama.cpp">llama.cpp</a> community)
-
-https://github.com/zhouwg/kantv/issues/121
-
-https://github.com/zhouwg/kantv/issues/246
-
 ### Hot topics
-
-- improve <a href="https://github.com/zhouwg/kantv/blob/master/core/ggml/llamacpp/ggml/src/ggml-qnn/ggml-qnn.cpp">ggml-qnn backend</a> on Android phone
-
-- porting <a href="https://github.com/zhouwg/kantv/blob/master/core/ggml/llamacpp/ggml/src/ggml-qnn/ggml-qnn.cpp">ggml-qnn backend</a> on WoA(Windows on ARM)
 
 - bugfix in UI layer(Java)
 
@@ -294,7 +285,6 @@ Report issue in various Android-based phone or even submit PR to this project is
 
 - [How to verify ggml-qnn backend on Qualcomm mobile SoC equipped Android phone](./README-qnn.md)
 - [How to integrate proprietary/open source codes to project KanTV for personal/proprietary/commercial R&D activity](https://github.com/zhouwg/kantv/issues/74)
-- [How to use whisper.cpp and ffmpeg to add subtitle to video](./docs/how-to-use-whispercpp-ffmpeg-add-subtitle-to-video.md)
 - [Authors](./AUTHORS)
 - [Acknowledgement](./docs/acknowledgement.md)
 - [ChangeLog](./release/README.md)
