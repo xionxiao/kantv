@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2024- KanTV Authors
+ * Copyright (c) 2024- KanTV Authors
  *
- * this is new implementation of ggml-qnn(ggml-qnn backend of Qualcomm QNN(Qualcomm Neural Network, aka Qualcomm AI Engine Direct), https://github.com/zhouwg/kantv/issues/246
+ * this is implementation of ggml-qnn(ggml-qnn backend of Qualcomm QNN(Qualcomm Neural Network,
+ * aka Qualcomm AI Engine Direct)
  *
  * Qualcomm QNN SDK and reference tech guides could be found at:
  * https://www.qualcomm.com/developer/software/qualcomm-ai-engine-direct-sdk
- * https://qpm.qualcomm.com/#/main/tools/details/qualcomm_ai_engine_direct
  * https://developer.qualcomm.com/software/hexagon-dsp-sdk/tools
  *
  * the implementation of ggml-qnn backend has six sections:
@@ -16,15 +16,15 @@
  * section-5 does ggml-qnn backend helper macro / data structure / function / class
  * section-6 does implementation of ggml-qnn backend according to ggml's backend subsystem
  *
- * for performance consideration, only provide GGML_OP_ADD and GGML_OP_MUL_MAT's QNN backend implementation:
- *    - GGML_OP_ADD:  this is skeleton, you can expand other ggml ops as your expertise
- *    - GGML_MUL_MAT: MUL_MAT take most of the compute time (about 95%), have to focus on MUL_MAT with QNN backend
- * of course, you can porting ggml-qnn to Windows on ARM as your need.
+ * currently only provide GGML_OP_ADD's QNN backend implementation:
+ *    - GGML_OP_ADD: this is skeleton, can expand other ggml ops according to expertise
  *
+ * of course, can porting ggml-qnn to Windows on ARM as need.
  */
 
  /*
  * Copyright (c) 2023-2024 The ggml authors
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal in the Software without restriction, including without limitation the
@@ -109,10 +109,6 @@ class qnn_instance;
 struct ggml_backend_qnn_context;
 static int free_qnn_tensor(Qnn_Tensor_t * tensor);
 static enum ggml_status ggml_backend_qnn_graph_compute(ggml_backend_t backend, struct ggml_cgraph * cgraph);
-
-#if (defined __ANDROID__) || (defined ANDROID)
-extern "C" int __android_log_print(int prio, const char * tag, const char * fmt, ...) __attribute__((__format__(printf, 3, 4)));
-#endif
 static void ggmlqnn_log_internal(ggml_log_level level, const char * file, const char * func, int line, const char * format, ...);
 
 // =================================================================================================
@@ -122,7 +118,7 @@ static void ggmlqnn_log_internal(ggml_log_level level, const char * file, const 
 #define GGML_QNN_LOGBUF_LEN                     4096
 #define ENABLE_QNNBACKEND_PERF                  1  // enable/disable op's perf info
 #define GGMLQNN_PRINT_QNN_INTERNAL_LOG          0  // enable/disable QNN's internal log
-#define GGMLQNN_PRINT_OP_ADD_LOG                0  // GGML_OP_ADD already verified with QNN-CPU / QNN-GPU / QNN-NPU
+#define GGMLQNN_PRINT_OP_ADD_LOG                1  // GGML_OP_ADD already verified with QNN-CPU / QNN-GPU / QNN-NPU
 #define GGMLQNN_PRINT_OP_MUL_MAT_LOG            1
 
 #define GGMLQNN_LOG_ERROR(...) ggmlqnn_log_internal(GGML_LOG_LEVEL_DEBUG,  __FILE__, __FUNCTION__, __LINE__, __VA_ARGS__)
@@ -146,13 +142,13 @@ static void ggmlqnn_log_internal(ggml_log_level level, const char * file, const 
         int len = vsnprintf(s_ggmlqnn_log_internal_buf + len_prefix, GGML_QNN_LOGBUF_LEN - len_prefix, format, args);
         if (len < (GGML_QNN_LOGBUF_LEN - len_prefix)) {
 #if (defined __ANDROID__) || (defined ANDROID)
-            //for Android APK
-            __android_log_print(ANDROID_LOG_INFO, "KANTV", "%s\n", s_ggmlqnn_log_internal_buf);
+            //for Android application(standard APP or command line tool)
+            __android_log_print(ANDROID_LOG_INFO, "ggml-qnn", "%s\n", s_ggmlqnn_log_internal_buf);
 #endif
 #if (defined __ANDROID__) || (defined ANDROID)
-            //do nothing when running on Android phone
+            //do nothing when running on Snapdragon based Android device
 #else
-            //for Windows on ARM
+            //for Snapdragon based WoA(Windows on ARM) device
             printf("%s\n", s_ggmlqnn_log_internal_buf);
 #endif
         }
@@ -1430,7 +1426,7 @@ Qnn_Tensor_t * ggml_qnn_create_tensor(const ggml_tensor * tensor) {
     char tensor_name[GGML_MAX_NAME] = {0};
 
     //FIXME:remove get_idx() and inc_idx() in the future but ensure the tensor name is unique
-    snprintf(tensor_name, GGML_MAX_NAME, "tensor_%2d", get_idx());
+    snprintf(tensor_name, GGML_MAX_NAME, "tensor_%-8d", get_idx());
     GGMLQNN_LOG_DEBUG("init_tensor %d", get_idx());
     inc_idx();
 
@@ -2987,8 +2983,8 @@ static void ggml_qnn_add(ggml_backend_t backend, ggml_tensor * op) {
         tensor_2 = ggml_qnn_create_tensor(dst);
     }
 
-#if GGMLQNN_DEBUG //comment this line and uncomment next line when troubleshooting mul_mat issue
-//#if GGMLQNN_PRINT_OP_ADD_LOG
+//#if GGMLQNN_DEBUG //uncomment this line and comment next line when troubleshooting mul_mat issue
+#if GGMLQNN_PRINT_OP_ADD_LOG
     GGMLQNN_LOG_DEBUG("call %s in dev %s\n", __func__, ctx->name);
     GGMLQNN_LOG_DEBUG("%15s: type = %i (%5s) ne = %5" PRIi64 " x %5" PRIi64 " x %5" PRIi64 ", nb = (%5zi, %5zi, %5zi)\n",
           src0->name,
@@ -3779,7 +3775,7 @@ struct ggml_backend_qnn_reg_context {
 };
 
 static const char * ggml_backend_qnn_reg_get_name(ggml_backend_reg_t reg) {
-    return "ggmlqnn-reg";
+    return "ggml-qnn";
 
     GGML_UNUSED(reg);
 }
