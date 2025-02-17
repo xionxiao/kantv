@@ -1,16 +1,4 @@
  /*
- * Copyright (c) 2024- KanTV Authors
- *
- * this is new implementation of ggml-qnn(ggml backend of Qualcomm Neural Network), https://github.com/zhouwg/kantv/issues/246
- *
- * Qualcomm QNN SDK and reference tech guides could be found at:
- * https://www.qualcomm.com/developer/software/qualcomm-ai-engine-direct-sdk
- * https://qpm.qualcomm.com/#/main/tools/details/qualcomm_ai_engine_direct
- * https://developer.qualcomm.com/software/hexagon-dsp-sdk/tools
- *
- */
-
- /*
  * Copyright (c) 2023-2024 The ggml authors
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -39,7 +27,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 #define GGML_QNN_MAX_DEVICES    3
 #define GGML_QNN_BACKEND_NAME   "qnn"
