@@ -57,6 +57,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import cdeos.media.player.CDEAssetLoader;
 import cdeos.media.player.KANTVDRM;
 import cdeos.media.player.CDEContentDescriptor;
 import cdeos.media.player.CDELog;
@@ -174,6 +175,15 @@ public class SystemSettingFragment extends BaseSettingsFragment {
                 dbFile.delete();
             } else {
                 CDELog.j(TAG, "db path not exist:" + dbFile.getAbsolutePath());
+            }
+
+            String qnnlibPath = CDEAssetLoader.getDataPath(mContext) + "qnnlib";
+            File destFile = new File(qnnlibPath);
+            if (destFile.exists()) {
+                CDELog.j(TAG, "dir: " + qnnlibPath + " exist");
+                CDEUtils.deleteFolder(qnnlibPath);
+            } else {
+                CDELog.j(TAG, "dir: " + qnnlibPath + " not exist");
             }
 
             String asrAudioFileName = CDEUtils.getDataPath(mContext) + "audio.wav";
