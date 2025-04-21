@@ -109,6 +109,7 @@
 
      // https://huggingface.co/Qwen/Qwen1.5-1.8B-Chat-GGUF/resolve/main/qwen1_5-1_8b-chat-q4_0.gguf   //1.1 GB
      private String ggmlModelFileName = "qwen1_5-1_8b-chat-q4_0.gguf";
+     private String selectModelFileName;
 
      //https://huggingface.co/ggml-org/DeepSeek-R1-Distill-Qwen-1.5B-Q4_0-GGUF/blob/main/deepseek-r1-distill-qwen-1.5b-q4_0.gguf //1.07 GB
 
@@ -159,7 +160,8 @@
 
          _txtLLMInfo.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
          _txtLLMInfo.setMovementMethod(ScrollingMovementMethod.getInstance());
-         displayFileStatus(CDEUtils.getDataPath() + "/models/" + ggmlModelFileName);
+         selectModelFileName  = CDEUtils.getSDCardDataPath() + ggmlModelFileName;
+         displayFileStatus(selectModelFileName);
 
          try {
              CDELibraryLoader.load("ggml-jni");
@@ -185,7 +187,8 @@
                  + "Arch:" + Build.CPU_ABI + "(" + systemInfo + ")";
          _txtGGMLInfo.setText("");
          _txtGGMLInfo.append(phoneInfo + "\n");
-         _txtGGMLInfo.append("Powered by https://github.com/ggerganov/llama.cpp");
+         _txtGGMLInfo.append("Model:" + ggmlModelFileName + "\n");
+         _txtGGMLInfo.append("Powered by https://github.com/ggml-org/llama.cpp");
 
 
          Spinner spinnerThreadsCounts = mActivity.findViewById(R.id.spinnerLLMThreadCounts);
@@ -242,23 +245,20 @@
 
              CDELog.j(TAG, "strModeName:" + ggmlModelFileName);
 
-             String selectModeFileName = ggmlModelFileName;
-             String selectModelFilePath = CDEUtils.getDataPath() + "/models/" + selectModeFileName;
-             CDELog.j(TAG, "selectModelFilePath:" + selectModelFilePath);
-             File selectModeFile = new File(selectModelFilePath);
-             displayFileStatus(selectModelFilePath);
+             File selectModeFile = new File(selectModelFileName);
+             displayFileStatus(selectModelFileName);
              if (!selectModeFile.exists()) {
                  CDELog.j(TAG, "model file not exist:" + selectModeFile.getAbsolutePath());
              }
 
              if (!selectModeFile.exists()) {
-                 CDEUtils.showMsgBox(mActivity, "pls check whether GGML's model file exist in /sdcard/kantv/models/");
+                 CDEUtils.showMsgBox(mActivity, "pls check whether GGML's model file exist in /sdcard/");
                  return;
              }
              //sanity check end
 
-             ggmlModelFileName = selectModeFileName;
-             CDELog.j(TAG, "model file:" + CDEUtils.getDataPath() + "/models/" + selectModeFileName);
+
+             CDELog.j(TAG, "model file:" + selectModelFileName);
 
              isBenchmarking.set(true);
 
@@ -291,7 +291,7 @@
                      beginTime = System.currentTimeMillis();
                      _txtGGMLStatus.setText("LLM inference is progressing...");
                      strBenchmarkInfo = ggmljava.llm_inference(
-                             CDEUtils.getDataPath() + "/models/" + ggmlModelFileName,
+                             selectModelFileName,
                              strUserInput,
                              benchmarkIndex,
                              nThreadCounts, backendIndex);

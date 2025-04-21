@@ -6,7 +6,7 @@ KanTV("Kan", aka Chinese PinYin "Kan" or Chinese HanZi "看" or English "watch/l
 
 - Record online TV to automatically generate videos (useful for short video creators to generate short video materials but pls respect IPR of original content creator/provider); record online TV's video / audio content for gather video / audio data which might be required of/useful for AI R&D activity
 
-- AI subtitle(real-time English subtitle for English online-TV(aka OTT TV) by the great & excellent & amazing<a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a>), pls attention Xiaomi 14 or other powerful Android mobile phone is HIGHLY required/recommended for AI subtitle feature otherwise unexpected behavior would happen
+- AI subtitle(real-time English subtitle for English online-TV(aka OTT TV) by the great & excellent & amazing<a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a>), pls attention Xiaomi 14 / Xiaomi 15 or other powerful Android mobile phone is HIGHLY required/recommended for AI subtitle feature otherwise unexpected behavior would happen
 
 - 2D graphic performance
 
@@ -25,7 +25,7 @@ KanTV("Kan", aka Chinese PinYin "Kan" or Chinese HanZi "看" or English "watch/l
 
 ### Highlight
 
-As far as I know, probably be the first <a href="https://github.com/zhouwg/ggml-hexagon/discussions/18">open-source implmentation of ggml-qnn/ggml-hexagon</a>
+As far as I know, probably be the first <a href="https://github.com/zhouwg/ggml-hexagon/discussions/18"> open-source ggml-hexagon backend for llama.cpp on Qualcomm's Hexagon NPU equipped phone</a>
 
 ### Supported Chipset
 
@@ -33,12 +33,12 @@ As far as I know, probably be the first <a href="https://github.com/zhouwg/ggml-
     Snapdragon 8 Gen 1+
     Snapdragon 8 Gen 2
     Snapdragon 8 Gen 3
-    Snapdragon 8 Elite(aka 8 Gen4)
+    Snapdragon 8 Elite
 
 
 ### Software architecture of KanTV Android
 
-![Image](https://github.com/user-attachments/assets/0ee33100-92da-43f7-baa6-7c4129525aba)
+![Image](https://github.com/user-attachments/assets/7dad3d8d-f938-4294-a8e3-3f4103e68bfa)
 
 
 ### How to build project manually
@@ -194,7 +194,7 @@ cd kantv
     ```
 
 
- - Modify <a href="https://github.com/zhouwg/kantv/blob/master/core/ggml/CMakeLists.txt#L14">ggml/CMakeLists.txt</a> accordingly if target Android device is Qualcomm Snapdragon 8Gen3 SoC or Qualcomm Snapdragon 8Elite(aka 8Gen4) SoC based Android phone
+ - Modify <a href="https://github.com/zhouwg/kantv/blob/master/core/ggml/CMakeLists.txt#L14">ggml/CMakeLists.txt</a> accordingly if target Android device is Qualcomm Snapdragon 8Gen3 SoC or Qualcomm Snapdragon 8Elite SoC based Android phone
 
  - Modify <a href="https://github.com/zhouwg/kantv/blob/master/core/ggml/CMakeLists.txt#L15">ggml/CMakeLists.txt</a> accordingly if target Android phone is Qualcomm SoC based Android phone and enable ggml-hexagon backend for AI inference on Qualcomm SoC based Android phone
 
@@ -249,7 +249,7 @@ You will need an Android smartphone with adb-connected running on one of below Q
     Snapdragon 8 Gen 1+
     Snapdragon 8 Gen 2
     Snapdragon 8 Gen 3
-    Snapdragon 8 Elite(aka 8 Gen4)
+    Snapdragon 8 Elite
 
 
 This project is a <b>pure AI learning&study</b> project, so the Android APK is a green Android APP and will not collect/upload user data in Android device. The Android APK should be works well on any Qualcomm mobile SoC equipped <b>mainstream</b> Android phone and the following permissions are required:
@@ -267,15 +267,13 @@ https://github.com/zhouwg/kantv/assets/6889919/2fabcb24-c00b-4289-a06e-05b98ecd2
 
 here is a screenshot to demostrate LLM inference by running the magic <a href="https://github.com/ggerganov/llama.cpp"> llama.cpp </a> on a Xiaomi 14 device - <b>fully offline, on-device</b>.
 
-
-![Image](https://github.com/user-attachments/assets/1eeade87-8e9b-4ca9-b730-4c27a6d01a8e)
+![Image](https://github.com/user-attachments/assets/3403d6fc-a063-40d4-8d38-9001ce297092)
 
 ----
 
 here is a screenshot to demostrate ASR inference by running the excellent <a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a> on a Xiaomi 14 device - <b>fully offline, on-device</b>.
 
-
-![Image](https://github.com/user-attachments/assets/9bf4fb00-9b7a-4bca-ac84-2c11babd69a2)
+![Image](https://github.com/user-attachments/assets/801d70c0-3713-4b94-865e-975c9fcafd4d)
 
 
 <details>
