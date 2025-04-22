@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 The KanTV authors
+ * Copyright (c) 2024-2025 The KanTV authors
  *
  * Qualcomm QNN SDK and reference tech guides could be found at:
  * https://www.qualcomm.com/developer/software/qualcomm-ai-engine-direct-sdk
@@ -385,9 +385,9 @@ static struct hexagon_appcfg_t g_hexagon_appcfg = {
         .cfgfilename            = "ggml-hexagon.cfg",
 #if defined(__ANDROID__)
 //Android command line program
-        //.runtime_libpath        = "/data/local/tmp/",
+        .runtime_libpath        = "/data/local/tmp/",
 //Android KanTV standard APP
-        .runtime_libpath        = "/data/data/com.cdeos.kantv/",
+        //.runtime_libpath        = "/data/data/com.cdeos.kantv/",
 #elif defined(__linux__)
         .qnn_runtimelib_path    = "/tmp/",
 #elif defined(_WIN32)
