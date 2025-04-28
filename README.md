@@ -16,13 +16,17 @@ KanTV("Kan", aka Chinese PinYin "Kan" or Chinese HanZi "看" or English "watch/l
 
 - Built-in [qwen2.5-3b](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF/tree/main) model and runs entirely offline(no Internet required)
 
+generally speaking, this is project for developers and AI experts.
+
+<!--
 In the all, generally speaking,
-- this is <b>project for Linux/Android developers</b>. If you thoroughly understand all the code in this project (native C/C++ and Java) <b>and</b> your age is under 35
-  - you will find a good job in the CN with a monthly salary of more than RMB30,000
+- this is <b>project for Linux/Android developers</b>. If you thoroughly understand all the code in this project (native C/C++ and Java)
+  - you will find a good job in the CN(age should be smaller then 35 because of well-known facts) with a monthly salary of more than RMB30,000
   - you will find a good job in the US with a monthly salary of more than USD8,000
   - you will find a good job in the EU with a monthly salary of more than EUR5,000
 
 - this is <b>project for AI experts</b>: focus on highly-valuable things rather than routine work or learning Linux/Android programming.
+-->
 
 
 ### Highlight
