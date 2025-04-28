@@ -1282,13 +1282,12 @@ static ggml_backend_t whisper_backend_init_gpu(const whisper_context_params & pa
 static std::vector<ggml_backend_t> whisper_backend_init(const whisper_context_params & params) {
     std::vector<ggml_backend_t> result;
 
-#if 0 //forcefully disable ggml-hexagon backend because there is unknown issue with ASR inference through cDSP, refer to:https://github.com/kantv-ai/kantv/pull/281
+#if 1 //forcefully disable ggml-hexagon backend, refer to:https://github.com/kantv-ai/kantv/pull/281
     ggml_backend_t backend_gpu = whisper_backend_init_gpu(params);
 
     if (backend_gpu) {
         result.push_back(backend_gpu);
     }
-
 
     // ACCEL backends
     for (size_t i = 0; i < ggml_backend_dev_count(); ++i) {

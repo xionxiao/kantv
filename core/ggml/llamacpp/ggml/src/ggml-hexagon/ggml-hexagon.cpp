@@ -5576,6 +5576,7 @@ static bool ggmlhexagon_can_handle_op_through_cdsp(ggml_backend_dev_t dev, const
     const ggml_tensor * src0 = op_tensor->src[0];
     const ggml_tensor * src1 = op_tensor->src[1];
     const int src0_rank      = ggml_n_dims(src0);
+    const int64_t ne00       = src0->ne[0];
     int src1_rank            = 0;
     if (nullptr != src1) {
         src1_rank = ggml_n_dims(src1);
@@ -5583,6 +5584,13 @@ static bool ggmlhexagon_can_handle_op_through_cdsp(ggml_backend_dev_t dev, const
     switch (op_tensor->op) {
         case GGML_OP_ADD:
         {
+            //TODO:workaround approach to fix HWACCEL_CDSP can't works in ASR inference and  LLM inference
+            //     with some LLM models in a standard Android APP
+            //     one more thing, I think the latest QNN SDK's internal also use the similar approach
+            if (ne00 < 1024) {
+                return false;
+            }
+
             if (!ggml_are_same_shape(src0, src1)) {
                 return false;
             }

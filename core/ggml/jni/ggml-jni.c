@@ -94,8 +94,8 @@ Java_kantvai_ai_ggmljava_ggml_1bench(JNIEnv *env, jclass clazz, jstring model_pa
     //FIXME: cDSP doesn't works with whisper.cpp at the moment
     if ((GGML_BENCHMARK_ASR == bench_type) && (HEXAGON_BACKEND_CDSP == backend_type)) {
         LOGGW("whisper.cpp through cDSP not supported currently");
-        GGML_JNI_NOTIFY("whisper.cpp through cDSP not supported currently");
-        goto failure;
+        //GGML_JNI_NOTIFY("whisper.cpp through cDSP not supported currently");
+        //goto failure;
     }
 
 #ifdef GGML_DISABLE_HEXAGON
