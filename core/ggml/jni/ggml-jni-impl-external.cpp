@@ -7400,6 +7400,25 @@ int qnn_ggml_op_automation_ut(const char *model_path, int num_threads, int n_bac
     return 0;
 }
 
+#ifndef GGML_USE_HEXAGON //make compiler happy when disable GGML_USE_HEXAGON manually
+const char * ggml_backend_hexagon_get_devname(size_t dev_num) {
+    switch (dev_num) {
+        case HEXAGON_BACKEND_QNNCPU:
+            return "HEXAGON_BACKEND_QNN_CPU";
+        case HEXAGON_BACKEND_QNNGPU:
+            return "HEXAGON_BACKEND_QNN_GPU";
+        case HEXAGON_BACKEND_QNNNPU:
+            return "HEXAGON_BACKEND_QNN_NPU";
+        case HEXAGON_BACKEND_CDSP:
+            return "HEXAGON_BACKEND_CDSP";
+        case HEXAGON_BACKEND_GGML:
+            return "ggml"; //"fake" hexagon backend, used for compare performance between hexagon backend and the default ggml backend
+        default:
+            return "unknown";
+    }
+}
+#endif
+
 static static std::atomic<uint32_t> g_ggmljni_llm_is_running(0);
 
 void llama_init_running_state() {

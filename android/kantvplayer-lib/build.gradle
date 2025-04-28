@@ -30,13 +30,13 @@ android {
     }
 
 
-    task cleanCDEOSMediaPlayerJar(type: Delete) {
+    task cleanKANTVMediaPlayerJar(type: Delete) {
         println '@kantvplayer-lib enter cleanJar-----------------'
         delete 'buildout/libs/kantvplayer-lib.jar'
         println '@kantvplayer-lib leave cleanJar-----------------'
     }
 
-    task buildCDEOSMediaPlayerJar(type: Copy) {
+    task buildKANTVMediaPlayerJar(type: Copy) {
         println '@kantvplayer-lib enter makeJar-----------------'
         from('build/intermediates/runtime_library_classes_jar/release/classes.jar')
         into('build/libs')
@@ -49,7 +49,7 @@ android {
     }
 
 
-    buildCDEOSMediaPlayerJar.dependsOn(cleanCDEOSMediaPlayerJar, build)
+    buildKANTVMediaPlayerJar.dependsOn(cleanKANTVMediaPlayerJar, build)
 }
 
 dependencies {

@@ -1,52 +1,15 @@
-# Copyright (c) 2024- KanTV Authors
-
-# Description: build libggml-jni.so for Android APP
+# Description: build libggml-jni.so for a standard Android APP
 
 cmake_minimum_required(VERSION 3.22.1) # make llamacpp happy
 project(ggml-jni)
 
-set(CMAKE_VERBOSE_MAKEFILE on)
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_VERBOSE_MAKEFILE          ON)
+set(CMAKE_CXX_STANDARD              20)
+set(CMAKE_CXX_STANDARD_REQUIRED     ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-set(TARGET_XIAOMI14    ON)    # set it to ON to get much better performance on Xiaomi 14(Snapdragon 8Gen3) or Xiaomi 15(Snapdragon 8Elite(aka 8Gen4) equipped Android phone
-set(GGML_ENABLE_HEXAGON    ON) # set it to ON to enable ggml-hexagon backend on Qualcomm SoC equipped Android phone
-
-set(KANTV_MEDIA_SRC_DIR         ${CMAKE_SOURCE_DIR}/media/)
-set(GGML_SRC_DIR                ${CMAKE_SOURCE_DIR}/ggml)
-set(WHISPERCPP_SRC_DIR          ${GGML_SRC_DIR}/whispercpp/)
-set(LLAMACPP_SRC_DIR            ${GGML_SRC_DIR}/llamacpp/)
-
-set(PREBUILT_LIB_PATH           ${GGML_SRC_DIR}/../../android/kantvplayer/src/main/jniLibs/${ANDROID_ABI}/)
-set(PREBUILT_INC_PATH           ${GGML_SRC_DIR}/../../prebuilts/include/)
-
-set(KANTV_GGMLJNI_SRC_DIR       ${GGML_SRC_DIR}/jni/)
-
-set(QNN_INC_PATH                ${GGML_SRC_DIR}/../../prebuilts/include/QNN)
-set(QNN_LIB_PATH                ${GGML_SRC_DIR}/../../prebuilts/lib/)
-
-message("GGML_SRC_DIR         : ${GGML_SRC_DIR}")
-message("WHISPERCPP_SRC_DIR   : ${WHISPERCPP_SRC_DIR}")
-message("LLAMACPP_SRC_DIR     : ${LLAMACPP_SRC_DIR}")
-message("PREBUILT_INC_PATH    : ${PREBUILT_INC_PATH}")
-message("PREBUILT_LIB_PATH    : ${PREBUILT_LIB_PATH}")
-message("PROJECT_ROOT_PATH    : ${PROJECT_ROOT_PATH}")
-message("target name          : ${TARGET_NAME}")
-message("build target         : ${BUILD_TARGET}")
-message("QNN_INC_PATH         : ${QNN_INC_PATH}")
-message("QNN_LIB_PATH         : ${QNN_LIB_PATH}")
-message("CMAKE_BUILD_TYPE     : ${CMAKE_BUILD_TYPE}")
-
-include_directories(${LLAMACPP_SRC_DIR}/ggml/include)
-include_directories(${LLAMACPP_SRC_DIR}/include)
-include_directories(${LLAMACPP_SRC_DIR}/ggml/src)
-include_directories(${LLAMACPP_SRC_DIR}/ggml/src/ggml-cpu)
-include_directories(${LLAMACPP_SRC_DIR}/ggml/src/ggml-hexagon)
-include_directories(${LLAMACPP_SRC_DIR}/ggml/src/ggml-hexagon/kernels)
-
-include_directories(${QNN_INC_PATH}/)
-include_directories(${KANTV_MEDIA_SRC_DIR}/include) # kantv-asr.h
+# set it to ON to enable ggml-hexagon backend on Qualcomm SoC based Android phone
+# set it to OFF if target Android phone is not Qualcomm SoC based phone
+set(GGML_ENABLE_HEXAGON             ON)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(DEBUG_FLAG "-Wall")
@@ -59,10 +22,16 @@ else()
     message("Release mode:${DEBUG_FLAG}")
 endif()
 
+if (GGML_ENABLE_HEXAGON)
+if(NOT DEFINED QNN_SDK_PATH)
+    message(WARNING "QNN_SDK_PATH not defined")
+    set(QNN_SDK_PATH "/opt/qcom/aistack/qairt/2.33.0.250327/")
+endif()
+
 if(NOT DEFINED HEXAGON_SDK_PATH)
     message(WARNING "HEXAGON_SDK_PATH not defined")
     #Hexagon SDK must be obtained with a Qualcomm Developer Account and cannot be downloaded automatically in this script
-    set(HEXAGON_SDK_PATH "/opt/qcom/Hexagon_SDK/6.2.0.1")
+    set(HEXAGON_SDK_PATH "/opt/qcom/Hexagon_SDK/6.2.0.1/")
 endif()
 
 if(NOT DEFINED HTP_ARCH_VERSION)
@@ -81,13 +50,68 @@ if (${CHECK_HTP_ARCH} STREQUAL "WRONG")
     message(FATAL_ERROR "ggml-hexagon backend only support htp arch v68,v69,v73,v75,v79")
 endif()
 
+endif() #if (GGML_ENABLE_HEXAGON)
+
 #check optimization flags
 set(OPT_FLAG " ")
-if (${HTP_ARCH_VERSION} STREQUAL "v75" OR ${HTP_ARCH_VERSION} STREQUAL "v79")
-    #works fine on Snapdragon 8Gen3&8Elite with 1.5x - 3x performance gains with the default ggml backend
-    set(OPT_FLAG " -O3 -march=armv8.7-a -mcpu=cortex-x1 -mtune=cortex-x1 -flto -D_GNU_SOURCE -fvectorize -ffp-model=fast -fno-finite-math-only")
+if(DEFINED HTP_ARCH_VERSION)
+    if (${HTP_ARCH_VERSION} STREQUAL "v75" OR ${HTP_ARCH_VERSION} STREQUAL "v79")
+        #works fine on Snapdragon 8Gen3&8Elite with 1.5x - 3x performance gains with the default ggml backend
+        set(OPT_FLAG " -O3 -march=armv8.7-a -mcpu=cortex-x1 -mtune=cortex-x1 -flto -D_GNU_SOURCE -fvectorize -ffp-model=fast -fno-finite-math-only")
+    else()
+        set(OPT_FLAG " -mcpu=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8")
+    endif()
+else()
+    set(OPT_FLAG " -mcpu=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8")
 endif()
 message("OPT_FLAG:${OPT_FLAG}")
+
+set(KANTV_MEDIA_SRC_DIR         ${CMAKE_SOURCE_DIR}/media/)
+set(GGML_SRC_DIR                ${CMAKE_SOURCE_DIR}/ggml)
+set(WHISPERCPP_SRC_DIR          ${GGML_SRC_DIR}/whispercpp/)
+set(LLAMACPP_SRC_DIR            ${GGML_SRC_DIR}/llamacpp/)
+set(PREBUILT_LIB_PATH           ${GGML_SRC_DIR}/../../android/kantvplayer/src/main/jniLibs/${ANDROID_ABI}/)
+set(PREBUILT_INC_PATH           ${GGML_SRC_DIR}/../../prebuilts/include/)
+set(KANTV_GGMLJNI_SRC_DIR       ${GGML_SRC_DIR}/jni/)
+
+if (GGML_ENABLE_HEXAGON)
+set(QNN_INC_PATH                ${GGML_SRC_DIR}/../../prebuilts/include/QNN)
+set(QNN_LIB_PATH                ${GGML_SRC_DIR}/../../prebuilts/lib/)
+endif()
+
+message("CMAKE_BUILD_TYPE     : ${CMAKE_BUILD_TYPE}")
+message("GGML_SRC_DIR         : ${GGML_SRC_DIR}")
+message("WHISPERCPP_SRC_DIR   : ${WHISPERCPP_SRC_DIR}")
+message("LLAMACPP_SRC_DIR     : ${LLAMACPP_SRC_DIR}")
+message("PREBUILT_INC_PATH    : ${PREBUILT_INC_PATH}")
+message("PREBUILT_LIB_PATH    : ${PREBUILT_LIB_PATH}")
+message("PROJECT_ROOT_PATH    : ${PROJECT_ROOT_PATH}")
+message("target name          : ${TARGET_NAME}")
+message("build target         : ${BUILD_TARGET}")
+
+if (GGML_ENABLE_HEXAGON)
+message("QNN_INC_PATH         : ${QNN_INC_PATH}")
+message("QNN_LIB_PATH         : ${QNN_LIB_PATH}")
+endif()
+
+include_directories(${LLAMACPP_SRC_DIR}/ggml/include)
+include_directories(${LLAMACPP_SRC_DIR}/include)
+include_directories(${LLAMACPP_SRC_DIR}/ggml/src)
+include_directories(${LLAMACPP_SRC_DIR}/ggml/src/ggml-cpu)
+include_directories(${WHISPERCPP_SRC_DIR}/)
+include_directories(${GGML_SRC_DIR}/)
+include_directories(${KANTV_GGMLJNI_SRC_DIR}/)
+include_directories(${PREBUILT_INC_PATH}/)
+include_directories(${LLAMACPP_SRC_DIR}/)
+include_directories(${LLAMACPP_SRC_DIR}/common/)
+include_directories(${LLAMACPP_SRC_DIR}/common/minja/)
+include_directories(${KANTV_MEDIA_SRC_DIR}/include) # kantv-asr.h
+
+if (GGML_ENABLE_HEXAGON)
+include_directories(${LLAMACPP_SRC_DIR}/ggml/src/ggml-hexagon)
+include_directories(${LLAMACPP_SRC_DIR}/ggml/src/ggml-hexagon/kernels)
+
+include_directories(${QNN_INC_PATH}/)
 
 include_directories(${HEXAGON_SDK_PATH}/incs)
 include_directories(${HEXAGON_SDK_PATH}/incs/stddef)
@@ -102,9 +126,8 @@ include_directories(${HEXAGON_SDK_PATH}/libs/atomic/android_Debug_aarch64/ship)
 include_directories(${LLAMACPP_SRC_DIR}/ggml/src/ggml-hexagon/)
 include_directories(${LLAMACPP_SRC_DIR}/ggml/src/ggml-hexagon/kernels/)
 
-if (GGML_ENABLE_HEXAGON)
-    #set(HEXAGON_BACKEND_SRCS ${LLAMACPP_SRC_DIR}/ggml/src/ggml-qnn/ggml-hexagon.cpp)
-    file(GLOB HEXAGON_BACKEND_SRCS "${LLAMACPP_SRC_DIR}/ggml/src/ggml-hexagon/*.cpp" "${LLAMACPP_SRC_DIR}/ggml/src/ggml-hexagon/kernels/stub.c")
+#set(HEXAGON_BACKEND_SRCS ${LLAMACPP_SRC_DIR}/ggml/src/ggml-qnn/ggml-hexagon.cpp)
+file(GLOB HEXAGON_BACKEND_SRCS "${LLAMACPP_SRC_DIR}/ggml/src/ggml-hexagon/*.cpp" "${LLAMACPP_SRC_DIR}/ggml/src/ggml-hexagon/kernels/stub.c")
 endif()
 
 set(SOURCE_FILES
@@ -127,6 +150,7 @@ set(SOURCE_FILES
         ${LLAMACPP_SRC_DIR}/ggml/src/ggml-cpu/ggml-cpu-hbm.cpp
         ${LLAMACPP_SRC_DIR}/ggml/src/ggml-cpu/ggml-cpu-quants.c
         ${LLAMACPP_SRC_DIR}/ggml/src/ggml-cpu/ggml-cpu-traits.cpp
+        ${LLAMACPP_SRC_DIR}/ggml/src/ggml-cpu/llamafile/sgemm.cpp
         ${HEXAGON_BACKEND_SRCS}
 
         ${LLAMACPP_SRC_DIR}/src/llama.cpp
@@ -166,20 +190,11 @@ set(SOURCE_FILES
         ${WHISPERCPP_SRC_DIR}/whisper.cpp
 
         ${KANTV_GGMLJNI_SRC_DIR}/ggml-jni.c
+        ${KANTV_GGMLJNI_SRC_DIR}/tinywav.c
         ${KANTV_GGMLJNI_SRC_DIR}/ggml-jni-impl.cpp
         ${KANTV_GGMLJNI_SRC_DIR}/ggml-jni-impl-external.cpp
-        ${KANTV_GGMLJNI_SRC_DIR}/tinywav.c
         ${KANTV_GGMLJNI_SRC_DIR}/llm-inference.cpp
 )
-
-include_directories(${WHISPERCPP_SRC_DIR}/)
-include_directories(${GGML_SRC_DIR}/)
-include_directories(${KANTV_GGMLJNI_SRC_DIR}/)
-include_directories(${PREBUILT_INC_PATH}/)
-
-include_directories(${LLAMACPP_SRC_DIR}/)
-include_directories(${LLAMACPP_SRC_DIR}/common/)
-include_directories(${LLAMACPP_SRC_DIR}/common/minja/)
 
 add_definitions(-DTARGET_ANDROID)
 add_definitions(-D__ARM_NEON)
@@ -191,32 +206,7 @@ add_definitions(-DPROJECT_NAME=\"KANTV\")
 add_definitions(-D__aarch64__)
 add_definitions(-D__linux__)
 add_definitions(-DGGML_USE_CPU)
-
-if (GGML_ENABLE_HEXAGON)
-add_definitions(-DGGML_USE_HEXAGON)
-endif()
-
 add_definitions(-O3)
-
-if (TARGET_XIAOMI14)
-
-#weiguo:2024-03-11
-# the below special build optimization ONLY validated ok on Xiaomi 14
-# works very well on Xiaomi 14 and got best ASR performance until now(less then 1 second)
-# manually enable it for Xiaomi 14
-add_definitions(-march=armv8.7-a)
-add_definitions(-mcpu=cortex-x1)
-add_definitions(-mtune=cortex-x1)
-
-else()
-
-#weiguo:2024-03-10
-# the below build optimization might be works well on ALL mainstream Android phones
-# but NOT work with realtime subtitle feature(app would crash)
-# so it's default enabled
-add_definitions(-mcpu=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8)
-
-endif()
 
 add_compile_options("-Wall" "-Wno-sign-compare")
 
@@ -241,10 +231,17 @@ add_definitions(-D_LIBCPP_EXCEPTIONS)
 add_definitions(-D_LIBCXXABI_EXCEPTIONS)
 add_link_options( "-lc++_shared" )
 
-set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -DGGML_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGGML_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DGGML_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DGGML_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
+if (GGML_ENABLE_HEXAGON)
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -DGGML_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGGML_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DGGML_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DGGML_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
+else()
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}    ${DEBUG_FLAG} ${OPT_FLAG}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${DEBUG_FLAG} ${OPT_FLAG}")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}  ${DEBUG_FLAG} ${OPT_FLAG}")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}  ${DEBUG_FLAG} ${OPT_FLAG}")
+endif ()
 
 find_library(LOG_LIB log)
 
@@ -257,15 +254,7 @@ set_target_properties(kantvmedia
         IMPORTED_LOCATION
         ${PREBUILT_LIB_PATH}/libkantv-media.so)
 
-add_library(kantvffmpeg
-        SHARED
-        IMPORTED)
-
-set_target_properties(kantvffmpeg
-        PROPERTIES
-        IMPORTED_LOCATION
-        ${PREBUILT_LIB_PATH}/libkantv-ffmpeg.so)
-
+if (GGML_ENABLE_HEXAGON)
 add_library(cdsprpc
         SHARED
         IMPORTED)
@@ -273,7 +262,7 @@ set_target_properties(cdsprpc
         PROPERTIES
         IMPORTED_LOCATION
         /opt/qcom/Hexagon_SDK/6.2.0.1/ipc/fastrpc/remote/ship/android_aarch64/libcdsprpc.so)
-
+endif()
 
 function(build_library target_name)
     add_library(
@@ -285,11 +274,11 @@ function(build_library target_name)
     if (GGML_ENABLE_HEXAGON)
         #file(GLOB allPrebuiltQNNLibs "${QNN_LIB_PATH}/libQnn*.so")
         #file(COPY ${allPrebuiltQNNLibs}  DESTINATION ${PREBUILT_LIB_PATH}/ )
-        #target_link_libraries(${target_name} ${LOG_LIB} kantvmedia kantvffmpeg android ${allPrebuiltQNNLibs})
+        #target_link_libraries(${target_name} ${LOG_LIB} kantvmedia android ${allPrebuiltQNNLibs})
 
         target_link_libraries(${target_name} ${LOG_LIB} kantvmedia android cdsprpc)
     else()
-        target_link_libraries(${target_name} ${LOG_LIB} kantvmedia android cdsprpc)
+        target_link_libraries(${target_name} ${LOG_LIB} kantvmedia android)
     endif()
 
 endfunction()
@@ -310,4 +299,6 @@ function(ggml_hexagon_build_kernel KNAME)
     )
 endfunction()
 
+if (GGML_ENABLE_HEXAGON)
 ggml_hexagon_build_kernel("cdsp")
+endif()

@@ -31,13 +31,13 @@
 #pragma warning(disable: 4244 4267) // possible loss of data
 #endif
 
-#if (defined __ANDROID__) || (defined ANDROID)
+#if defined(__ANDROID__) || defined(ANDROID)
 extern "C" {
 #include "libavutil/cde_log.h"
 #include "libavutil/cde_assert.h"
 }
-#include "llamacpp/ggml/include/ggml-hexagon.h"
 #include "ggml-jni.h"
+#include "llamacpp/ggml/include/ggml-hexagon.h"
 #endif
 
 static llama_context           ** g_ctx;
@@ -104,7 +104,7 @@ int llama_inference_main(int argc, char ** argv, int backend_type) {
 
     LOGGD("enter llama_inference_main backend_type %d", backend_type);
     if (backend_type != HEXAGON_BACKEND_GGML) {
-#ifdef GGML_USE_HEXAGON \
+#ifdef GGML_USE_HEXAGON
         LOGGD("using hexagon backend %d", backend_type);
         params.main_gpu = backend_type;
         params.n_gpu_layers = 99;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 The ggml authors
+ * Copyright (c) 2024-2025 KanTV Authors
  *
  * Qualcomm QNN SDK and reference tech guides could be found at:
  * https://www.qualcomm.com/developer/software/qualcomm-ai-engine-direct-sdk

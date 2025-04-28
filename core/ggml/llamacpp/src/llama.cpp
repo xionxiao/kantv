@@ -9,13 +9,13 @@
 #include "ggml.h"
 #include "ggml-backend.h"
 
-#ifdef GGML_USE_HEXAGON
+#if defined(__ANDROID__) || defined(ANDROID)
 extern "C" {
 #include "libavutil/cde_log.h"
 #include "libavutil/cde_assert.h"
 }
-#include "llamacpp/ggml/include/ggml-hexagon.h"
 #include "ggml-jni.h"
+#include "llamacpp/ggml/include/ggml-hexagon.h"
 #endif
 
 #include <algorithm>
