@@ -101,7 +101,7 @@ extern "C" {
 #include <limits.h>
 #include <signal.h>
 #include <stdint.h>
-//#include <stdatomic.h>
+
 #include <fcntl.h>
 #include <sys/types.h>
 #include <unistd.h>
