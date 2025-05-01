@@ -1,6 +1,6 @@
 # KanTV
 
-KanTV("Kan", aka Chinese PinYin "Kan" or Chinese HanZi "看" or English "watch/listen") , an open source project focus on study and practise state-of-the-art device-AI technology in <b>real scenario</b>(such as online-TV playback and online-TV transcriptionand online-TV video&audio recording at the same time) on <b>ANY mainstream</b> Android phone/device:
+KanTV("Kan", aka English "watch") , an open source project focus on study and practise device-AI technology in <b>real scenario</b>(such as online-TV playback and <b>realtime transcription</b> through the amazing <b>whisper.cpp</b> and online-TV recording at the same time) on Android phone:
 
 
 - Watch online TV and local media by customized ![FFmpeg 6.1](https://github.com/zhouwg/FFmpeg). this project is derived from original ![ijkplayer](https://github.com/zhouwg/kantv/tree/kantv-initial)(because that project has stopped maintenance since 2021), with much enhancements and new features, source code of customized FFmpeg 6.1 could be found in <a href="https://github.com/zhouwg/kantv/tree/master/external/ffmpeg-6.1"> external/ffmpeg </a>according to <a href="https://ffmpeg.org/legal.html">FFmpeg's license</a>. Developers or domain tech experts can set up [a customized playlist](./android/kantvplayer/src/main/assets/tv.xml) and then use this software to watch the content of the customized playlist for R&D activity.
@@ -32,46 +32,28 @@ In the all, generally speaking,
 
 ### Highlight
 
-As far as I/We know, probably be <a href="https://github.com/zhouwg/ggml-hexagon/discussions/18"> the first open-source implementation of ggml-hexagon backend in llama.cpp community </a> for Android phone equipped with Qualcomm's high-end Hexagon NPU(such as Snapdragon 8Gen3/Snapdragon 8Elite).
+As far as I/We know, probably be <a href="https://github.com/zhouwg/ggml-hexagon/discussions/18"> the first open-source implementation </a> of ggml-hexagon backend in llama.cpp community for Android phone equipped with Qualcomm's high-end Hexagon NPU(such as Snapdragon 8Gen3/Snapdragon 8Elite), [PR can be found at](https://github.com/ggml-org/llama.cpp/pull/12326) upstream llama.cpp community.
 
 
 ### Software architecture of KanTV Android
 
-![Image](https://github.com/user-attachments/assets/7dad3d8d-f938-4294-a8e3-3f4103e68bfa)
-
+![kantv-arch-320-240](https://github.com/user-attachments/assets/48e18ace-b667-45f9-8e0f-9faf1427e6bf)
 
 ### Building the project
 
 - Clone this repository and build locally, see [how to build](./docs/build.md)
-- How to build project for Android phone equipped <b>without</b> Qualcomm mobile SoC:modify [ggml/CMakeLists.txt#L12](./core/ggml/CMakeLists.txt#L12) accordingly.
 - Download pre-built Android APK from https://github.com/kantv-ai/kantv/releases
 
 ### Run Android APK on Android phone
-
-- Prepare LLM model
+- Android smartphone equipped with one of below Qualcomm mobile SoCs(<b>Qualcomm high-end mobile SoC</b> Snapdragon 8Gen3 and Snapdragon 8Elite are highly recommended) is <b>required</b> for verify/running ggml-hexagon backend on Android phone:
 ```
-    wget https://huggingface.co/ggml-org/gemma-3-4b-it-GGUF/resolve/main/gemma-3-4b-it-Q8_0.gguf
-
-    adb push gemma-3-4b-it-Q8_0.gguf /sdcard/
-```
-
-- Android smartphone equipped with one of below Qualcomm mobile SoCs(Qualcomm Snapdragon 8Gen3 and Snapdragon 8Elite are highly recommended) is <b>required</b> for verify/running ggml-hexagon backend on Android phone:
-
     Snapdragon 8 Gen 1
-
     Snapdragon 8 Gen 1+
-
     Snapdragon 8 Gen 2
-
     Snapdragon 8 Gen 3
-
     Snapdragon 8 Elite
-
-- Android smartphone equipped with <b>ANY</b> mainstream high-end mobile SoC is highly <b>recommented</b> for realtime AI-subtitle feature otherwise unexpected behavior would happen
-
-- This project is a <b>pure AI learning&study</b> project, so the Android APK is a <b>green</b> Android APP and will <b>NOT</b> collect/upload user data in Android device, following minimum permissions are required:
-  - Access to storage is required for TV recording(write recording data to storage) and ASR/LLM inference(read/load models from storage)
-  - Access to device information is required to obtain phone's network status information, distinguishing whether the current network is Wi-Fi or mobile when playing online TV
+```
+- Android smartphone equipped with <b>ANY</b> mainstream <b>high-end</b> mobile SoC is highly <b>recommented</b> for realtime AI-subtitle feature otherwise unexpected behavior would happen
 
 ### Screenshots
 <hr>
@@ -81,28 +63,35 @@ https://github.com/zhouwg/kantv/assets/6889919/2fabcb24-c00b-4289-a06e-05b98ecd2
 
 ----
 
-here is a screenshot to demostrate multi-modal inference by running the magic <a href="https://github.com/ggerganov/llama.cpp"> llama.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8 Gen3 mobile SoC  - <b>fully offline, on-device</b>.
+a screenshot to demostrate multi-modal inference by running the magic <a href="https://github.com/ggerganov/llama.cpp"> llama.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8 Gen3 mobile SoC  - <b>fully offline, on-device</b>.
 
 
 ![1429485556](https://github.com/user-attachments/assets/84d9fed1-e250-4212-8eff-104f08110875)
 
 ----
-here is a screenshot to demostrate LLM inference by running the magic <a href="https://github.com/ggerganov/llama.cpp"> llama.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8 Gen3 mobile SoC  - <b>fully offline, on-device</b>.
+a screenshot to demostrate LLM inference by running the magic <a href="https://github.com/ggerganov/llama.cpp"> llama.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8 Gen3 mobile SoC  - <b>fully offline, on-device</b>.
 
 ![1351701335](https://github.com/user-attachments/assets/fc30d262-def2-4b77-973c-b71b33080535)
 
 
 ----
 
-here is a screenshot to demostrate ASR inference by running the excellent <a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8 Gen 3 mobile SoC - <b>fully offline, on-device</b>.
+a screenshot to demostrate ASR inference by running the excellent <a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8 Gen 3 mobile SoC - <b>fully offline, on-device</b>.
 
 ![705759462](https://github.com/user-attachments/assets/df1ed1ed-294e-4691-bbd1-b8a6f7ff6f8c)
+
+----
+a screenshot to demostrate download LLM model in APK.
+
+![Image](https://github.com/user-attachments/assets/b07f8560-9221-4136-b773-4b0874de294a)
+
 <details>
   <summary>some other screenshots</summary>
   <ol>
 
 ![Image](https://github.com/user-attachments/assets/2d95bd5e-bd02-4810-aa70-a81cc0469fcc)
 
+![Image](https://github.com/user-attachments/assets/025a8ff0-7584-4df2-97a5-f4e655a52e0f)
   </ol>
 </details>
 
@@ -125,6 +114,7 @@ Report issue in various Android-based phone and <b>submit PR to this project is 
 
 - [About ggml-hexagon](https://github.com/zhouwg/ggml-hexagon/discussions/18)
 - [How to build](./docs/build.md)
+- [How to troubleshooting](./docs/FAQ.md)
 - <b>[How to integrate proprietary/open source codes to project KanTV for personal/proprietary/commercial R&D activity](./docs/how-to-customize.md)</b>
 - [Authors](./AUTHORS)
 - [Acknowledgement](./docs/acknowledgement.md)
