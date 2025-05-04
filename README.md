@@ -1,23 +1,22 @@
 # KanTV
 
-KanTV("Kan", aka English "watch") , an open source project focus on study and practise device-AI tech in <b>real scenario</b>(such as perform <b>online-TV playback</b> and <b>realtime transcription</b> and <b>online-TV record</b> at the same time) on Android phone:
+KanTV("Kan", aka English "watch") , an open source project focus on study and practise on-device AI technology in <b>real scenario</b>(such as perform <b>online-TV playback</b> and <b>realtime transcription</b> and <b>online-TV record</b> at the same time) on Android phone:
 
 
-- Watch online TV and local media by customized ![FFmpeg 6.1](https://github.com/zhouwg/FFmpeg). this project is derived from original ![ijkplayer](https://github.com/zhouwg/kantv/tree/kantv-initial)(that project has stopped maintenance since 2021), with much enhancements and new features, source code of customized FFmpeg 6.1 could be found in <a href="https://github.com/zhouwg/kantv/tree/master/external/ffmpeg-6.1"> external/ffmpeg </a>according to <a href="https://ffmpeg.org/legal.html">FFmpeg's license</a>.
+- Watch online TV and local media by customized ![FFmpeg 6.1](https://github.com/zhouwg/FFmpeg). this project is derived from original ![ijkplayer](https://github.com/zhouwg/kantv/tree/kantv-initial)(that project has stopped maintenance since 2021), with much enhancements and new features, source code of customized FFmpeg 6.1 could be found in <a href="https://github.com/zhouwg/kantv/tree/master/external/ffmpeg-6.1"> external/ffmpeg </a>according to <a href="https://ffmpeg.org/legal.html">FFmpeg's license</a>. developers or other users can [customize tv.xml](./docs/how-to-customize-tv-xml.md) very easily for R&D activities or personal needs.
 
 - Record online TV to automatically generate videos(useful for short video creators to generate short video materials but pls respect IPR of original content creator/provider).
 - 2D graphic performance benchmark.
 
 - AI subtitle(real-time English subtitle for English online-TV(aka OTT TV) via the great & excellent & amazing<a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a>).
 
-- Well-maintained <b>turn-key / self-contained</b> project for AI experts/researchers(whom mightbe not familiar with <b>regular Android software development</b>) focus on on-device AI R&D activity, some AI R&D activities (AI algorithm validation / AI model validation / performance benchmark in ASR, LLM) could be done by Android Studio IDE + a powerful Android phone easily.
+- Well-maintained <b>turn-key / self-contained</b> workbench for AI experts/researchers(whom mightbe not familiar with regular Android software development) focus on highly-value on-device AI R&D activity, some on-device AI R&D activities (AI algorithm validation / AI model validation / performance benchmark in ASR, LLM on Android) could be done via this project easily.
 
-- Built-in [Gemma3-4B](https://huggingface.co/ggml-org/gemma-3-4b-it-GGUF/tree/main) text-to-text and image-to-text(multimodal) supportive and runs entirely offline(no Internet required)
+- Well-maintained <b>turn-key / self-contained</b> workbench for AI beginners to learning on-device AI technology on Android device through llama.cpp and whisper.cpp.
 
-### Highlight
+- Built-in [Gemma3-4B](https://huggingface.co/ggml-org/gemma-3-4b-it-GGUF/tree/main) text-to-text and image-to-text(multimodal) supportive and runs entirely offline(no Internet required). the Gemma3-4B LLM models can be downloadded in the Android APK directly without manually preparation.
 
-As far as I/We know, [the implementation of ggml-hexagon in this project](https://github.com/kantv-ai/kantv/blob/master/core/ggml/llamacpp/ggml/src/ggml-hexagon/ggml-hexagon.cpp) probably be the first open-source implementation of ggml-hexagon backend in llama.cpp community for Android phone equipped with Qualcomm's high-end Hexagon NPU(such as Snapdragon 8Gen3/Snapdragon 8Elite), [PR can be found at](https://github.com/ggml-org/llama.cpp/pull/12326) upstream llama.cpp community, details could be found at https://github.com/zhouwg/ggml-hexagon/discussions/18.
-
+- Probably be the first [open-source implementation of a specified llama.cpp backend for Qualcomm Hexagon NPU](https://github.com/kantv-ai/kantv/blob/master/core/ggml/llamacpp/ggml/src/ggml-hexagon/ggml-hexagon.cpp) on Android phone.
 
 ### Software architecture of KanTV Android
 
@@ -54,17 +53,8 @@ a screenshot to demostrate multi-modal inference by running the magic <a href="h
 
 ![132746253](https://github.com/user-attachments/assets/ce0306c4-5e59-4504-8ebe-b17c178e688b)
 
-----
 
-a screenshot to demostrate ASR inference by running the excellent <a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8 Gen 3 mobile SoC - <b>fully offline, on-device</b>.
 
-![226086526](https://github.com/user-attachments/assets/1e5d54f7-a2c2-4365-b46f-4c8486156bd4)
-
-----
-a screenshot to demostrate download LLM model in APK.
-
-![1213951738](https://github.com/user-attachments/assets/5a0a965e-1752-475e-a2c1-63e6f60a9009)
-![1242080159](https://github.com/user-attachments/assets/32586234-4b2c-4d43-b0ab-498c56de44b3)
 
 <details>
   <summary>some other screenshots</summary>
@@ -73,12 +63,24 @@ a screenshot to demostrate download LLM model in APK.
 ![Image](https://github.com/user-attachments/assets/2d95bd5e-bd02-4810-aa70-a81cc0469fcc)
 
 ![Image](https://github.com/user-attachments/assets/025a8ff0-7584-4df2-97a5-f4e655a52e0f)
+
+
+----
+
+a screenshot to demostrate ASR inference by running the excellent <a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8 Gen 3 mobile SoC - <b>fully offline, on-device</b>.
+
+![226086526](https://github.com/user-attachments/assets/1e5d54f7-a2c2-4365-b46f-4c8486156bd4)
+
+
+----
+a screenshot to demostrate download LLM model in APK.
+
+![1213951738](https://github.com/user-attachments/assets/5a0a965e-1752-475e-a2c1-63e6f60a9009)
+![1242080159](https://github.com/user-attachments/assets/32586234-4b2c-4d43-b0ab-498c56de44b3)
+
   </ol>
 </details>
 
-### Hot topics
-
-- roadmap: https://github.com/zhouwg/kantv/discussions/262
 
 ### Contribution
 
@@ -90,52 +92,16 @@ English is preferred in this project, thanks for cooperation and understanding.
 -->
 
 ### Docs
-
-- [About ggml-hexagon](https://github.com/zhouwg/ggml-hexagon/discussions/18)
 - [How to build](./docs/build.md)
-- [How to troubleshooting](./docs/FAQ.md)
+- [How to customize tv.xml](./docs/how-to-customize-tv-xml.md)
+- [How to troubleshooting issues in APP](./docs/FAQ.md)
+- [AI-assisted programming via Grok-3](https://github.com/kantv-ai/kantv/blob/4233a85f5e6bf488a5ccf897199ebe4b474e7ae7/core/ggml/llamacpp/ggml/src/ggml-hexagon/ggml-hexagon.cpp#L4164-L4361) and AI-assisted programming via DeepSeek-R1.
 - <b>[How to integrate proprietary/open source codes to project KanTV for personal/proprietary/commercial R&D activity](./docs/how-to-customize.md)</b>
 - [Authors](./AUTHORS)
 - [Acknowledgement](./docs/acknowledgement.md)
 - [ChangeLog](./release/README.md)
+- [Roadmap](https://github.com/zhouwg/kantv/discussions/262)
 
-### How to customize tv.xml
-- step 1: download tv.xml from phone
-```
-adb pull /sdcard/tv.xml
-```
-- step 2: edit tv.xml
-
-```
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-    <entry>
-        <title> CNA(Channel News Asia) </title>
-        <link href="https://d2e1asnsl7br7b.cloudfront.net/7782e205e72f43aeb4a48ec97f66ebbe/index_5.m3u8" poster="cna.png" urltype="hls" />
-    </entry>
-
-    <entry>
-        <title> test1 </title>
-        <link href="  https://english-livebkws.cgtn.com/live/encgtn.m3u8" poster="test.png" urltype="hls" />
-    </entry>
-
-    <entry>
-        <title> test2 </title>
-        <link href="  https://english-livebkws.cgtn.com/live/encgtn.m3u8"  urltype="hls" />
-    </entry>
-
-    <entry>
-        <title> test3 </title>
-        <link href="  https://english-livebkws.cgtn.com/live/encgtn.m3u8" />
-    </entry>
-
-</feed>
-```
-
-- step 3: upload tv.xml to phone
-```
-adb push /sdcard/tv.xml
-```
 
 ### Special Acknowledgement
 
@@ -171,3 +137,47 @@ adb push /sdcard/tv.xml
 ### License
 
 This project is licensed under [the MIT License](./LICENSE).
+
+## Citation
+
+If you find this project useful in your R&D activity or learning activity, please consider giving a star :star: and citation :pencil: :)
+
+```
+@software{KanTV authors,
+  author = {KanTV authors},
+  title = {Project KanTV},
+  year = {2024-2025},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  url = { https://github.com/kantv-ai/kantv/tree/master },
+}
+
+@software{ggml-hexagon,
+  author = {zhouwg},
+  title = {ggml-hexagon: a specified llama.cpp backend for Qualcomm Hexagon NPU},
+  year = {2024-2025},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  url = { https://github.com/kantv-ai/kantv/blob/master/core/ggml/llamacpp/ggml/src/ggml-hexagon/ggml-hexagon.cpp },
+}
+
+@article{ggml-hexagon,
+  title={ggml-hexagon:high-level data path of ggml-hexagon},
+  author={zhouwg},
+  year = {2025},
+  month = {04},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  url = = { https://github.com/zhouwg/ggml-hexagon/discussions/33 },
+}
+
+@article{ggml-hexagon,
+  title={ggml-hexagon:why HWACCEL_CDSP approach is correct direction in llama.cpp community},
+  author={zhouwg},
+  year = {2025},
+  month = {04},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  url = = { https://github.com/zhouwg/ggml-hexagon/discussions/28 },
+}
+```
