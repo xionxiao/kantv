@@ -10,11 +10,13 @@ KanTV("Kan", aka English "watch") , an open source project focus on study and pr
 
 - AI subtitle(real-time English subtitle for English online-TV(aka OTT TV) via the great & excellent & amazing<a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a>).
 
-- Well-maintained <b>turn-key / self-contained</b> workbench for AI experts/researchers(whom mightbe not familiar with regular Android software development) focus on highly-value on-device AI R&D activity, some on-device AI R&D activities (AI algorithm validation / AI model validation / performance benchmark in ASR, LLM on Android) could be done via this project easily.
+- Well-maintained <b>turn-key / self-contained</b> workbench for AI experts/researchers(whom mightbe not familiar with regular Android software development) focus on highly-value on-device AI R&D activity, some on-device AI R&D activities (AI algorithm validation and AI model validation and performance benchmark with ASR/Text2Image/LLM on Android) could be done via this project easily.
 
-- Well-maintained <b>turn-key / self-contained</b> workbench for AI beginners to learning on-device AI technology on Android device through llama.cpp and whisper.cpp.
+- Well-maintained <b>turn-key / self-contained</b> workbench for AI beginners to learning on-device AI technology on Android.
 
 - Built-in [Gemma3-4B](https://huggingface.co/ggml-org/gemma-3-4b-it-GGUF/tree/main) text-to-text and image-to-text(multimodal) supportive and runs entirely offline(no Internet required). the Gemma3-4B LLM models can be downloadded in the Android APK directly without manually preparation.
+
+- Text2Image on Android phone via the amazing [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp).
 
 - Probably be the first [open-source implementation of a specified llama.cpp backend for Qualcomm Hexagon NPU](https://github.com/kantv-ai/kantv/blob/master/core/ggml/llamacpp/ggml/src/ggml-hexagon/ggml-hexagon.cpp) on Android phone.
 
@@ -30,7 +32,7 @@ KanTV("Kan", aka English "watch") , an open source project focus on study and pr
 ### Run Android APK on Android phone
 - Android 5.1 --- Android 15 and higher version with <b>ANY</b> mainstream mobile SoC might/should/could be supported.
 - Android smartphone equipped with <b>ANY</b> mainstream <b>high-end</b> mobile SoC is highly <b>recommented</b> for realtime AI-subtitle feature otherwise unexpected behavior would happen.
-- Android smartphone equipped with one of below Qualcomm mobile SoCs(Qualcomm high-end mobile SoC <b>Snapdragon 8Gen3 and Snapdragon 8Elite</b> are highly recommended) <b>is required</b> for verify/running ggml-hexagon backend on Android phone:
+- Android smartphone equipped with one of below Qualcomm mobile SoCs(Qualcomm's state-of-the-art high-end mobile SoC <b>Snapdragon 8Gen3 series and Snapdragon 8Elite series</b> are highly recommended) <b>is required</b> for verify/running ggml-hexagon backend on Android phone:
 ```
     Snapdragon 8 Gen 1
     Snapdragon 8 Gen 1+
@@ -42,16 +44,15 @@ KanTV("Kan", aka English "watch") , an open source project focus on study and pr
 
 ### Screenshots
 <hr>
-here is a short video to demostrate AI subtitle by running the great & excellent & amazing<a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8 Gen3 mobile SoC - <b>fully offline, on-device</b>.
+here is a short video to demostrate realtime AI subtitle by running the great & excellent & amazing<a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8Gen3 mobile SoC - <b>fully offline, on-device</b>.
 
 https://github.com/zhouwg/kantv/assets/6889919/2fabcb24-c00b-4289-a06e-05b98ecd22b8
 
 ----
 
-a screenshot to demostrate multi-modal inference by running the magic <a href="https://github.com/ggerganov/llama.cpp"> llama.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8 Gen3 mobile SoC  - <b>fully offline, on-device</b>.
+a screenshot to demostrate multi-modal inference by running the magic <a href="https://github.com/ggerganov/llama.cpp"> llama.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8Elite mobile SoC  - <b>fully offline, on-device</b>.
 
-
-![132746253](https://github.com/user-attachments/assets/ce0306c4-5e59-4504-8ebe-b17c178e688b)
+![Image](https://github.com/user-attachments/assets/c406951a-383a-4943-a58d-cda401148f9e)
 
 
 
@@ -60,17 +61,22 @@ a screenshot to demostrate multi-modal inference by running the magic <a href="h
   <summary>some other screenshots</summary>
   <ol>
 
-![Image](https://github.com/user-attachments/assets/2d95bd5e-bd02-4810-aa70-a81cc0469fcc)
+![Image](https://github.com/user-attachments/assets/d9c9bc39-d0d8-4d50-b74d-59152de28d6d)
 
 ![Image](https://github.com/user-attachments/assets/025a8ff0-7584-4df2-97a5-f4e655a52e0f)
 
 
 ----
 
-a screenshot to demostrate ASR inference by running the excellent <a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8 Gen 3 mobile SoC - <b>fully offline, on-device</b>.
+a screenshot to demostrate ASR inference by running the excellent <a href="https://github.com/ggerganov/whisper.cpp"> whisper.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8Gen3 mobile SoC - <b>fully offline, on-device</b>.
 
-![226086526](https://github.com/user-attachments/assets/1e5d54f7-a2c2-4365-b46f-4c8486156bd4)
+![Image](https://github.com/user-attachments/assets/46856bf2-cc4b-4b0a-9209-d07825fba2e7)
 
+
+----
+a screenshot to demostrate Text-2-Image inference by running the amazaing <a href="https://github.com/leejet/stable-diffusion.cpp"> stable-diffusion.cpp </a> on an Android phone equipped with Qualcomm Snapdragon 8Elite mobile SoC - <b>fully offline, on-divice</b>.
+
+![713992135](https://github.com/user-attachments/assets/fd6de03a-1f26-45b9-8336-078f928a98b6)
 
 ----
 a screenshot to demostrate download LLM model in APK.
@@ -100,6 +106,8 @@ English is preferred in this project, thanks for cooperation and understanding.
 - [Authors](./AUTHORS)
 - [Acknowledgement](./docs/acknowledgement.md)
 - [ChangeLog](./release/README.md)
+- [ggml-hexagon:history of ggml-hexagon](https://github.com/zhouwg/ggml-hexagon/discussions/18)
+- [ggml-hexagon:high-level data path of ggml-hexagon](https://github.com/zhouwg/ggml-hexagon/discussions/33)
 - [Roadmap](https://github.com/zhouwg/kantv/discussions/262)
 
 
@@ -128,6 +136,10 @@ English is preferred in this project, thanks for cooperation and understanding.
   LLM engine <a href="https://github.com/ggml-org/llama.cpp">llama.cpp</a>
   </li>
 
+  <li>
+   Text2Image engine <a href="https://github.com/leejet/stable-diffusion.cpp">stable-diffusion.cpp</a>
+  </li>
+
   </ul>
 
   </ul>
@@ -139,8 +151,6 @@ English is preferred in this project, thanks for cooperation and understanding.
 This project is licensed under [the MIT License](./LICENSE).
 
 ## Citation
-
-If you find this project useful in your R&D activity or learning activity, please consider giving a star :star: and citation :pencil: :)
 
 ```
 @software{KanTV authors,
@@ -161,23 +171,4 @@ If you find this project useful in your R&D activity or learning activity, pleas
   url = { https://github.com/kantv-ai/kantv/blob/master/core/ggml/llamacpp/ggml/src/ggml-hexagon/ggml-hexagon.cpp },
 }
 
-@article{ggml-hexagon,
-  title={ggml-hexagon:high-level data path of ggml-hexagon},
-  author={zhouwg},
-  year = {2025},
-  month = {04},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  url = = { https://github.com/zhouwg/ggml-hexagon/discussions/33 },
-}
-
-@article{ggml-hexagon,
-  title={ggml-hexagon:why HWACCEL_CDSP approach is correct direction in llama.cpp community},
-  author={zhouwg},
-  year = {2025},
-  month = {04},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  url = = { https://github.com/zhouwg/ggml-hexagon/discussions/28 },
-}
 ```
