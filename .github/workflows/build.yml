@@ -8,7 +8,6 @@ on:
   push:
     branches:
       - master
-     # 添加忽略路径，避免文档更新等触发构建
     paths-ignore:
       - '**.md'
       - 'docs/**'
@@ -32,6 +31,7 @@ jobs:
       - name: build android release
         run: |
           source build/envsetup.sh
+          ./build/prebuild.sh
           ./build/prebuild-download.sh
           lunch 1
           ./build/build-all.sh android
@@ -40,17 +40,19 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{  success() }}
         with:
-          name: arm64-v8a release apk
+          #TODO: add prebuilt-apk for Android phone equipped without Qualcomm mobile SoC
+          #      kantv-release-v1.6.9-for-non-qcom-signed.apk
+          name: kantv-release-v1.6.9-for-qcom-signed.apk
           compression-level: 0
-          retention-days: 3
-          path: ${{ github.workspace }}/android/kantvplayer/build/outputs/apk/all64/release/kantv-release-*-signed.apk
+          retention-days: 30
+          path: ${{ github.workspace }}/android/kantvplayer/build/outputs/apk/all64/release/kantv-release-v1.6.9-signed.apk
 
       - name: upload arm64-v8a release to release
         uses: svenstaro/upload-release-action@v2
         if: github.event_name == 'release'
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ github.workspace }}/android/kantvplayer/build/outputs/apk/all64/release/kantv-release-*-signed.apk
+          file: ${{ github.workspace }}/android/kantvplayer/build/outputs/apk/all64/release/kantv-release-v1.6.9-signed.apk
           tag: ${{ github.ref }}
           file_glob: true
 

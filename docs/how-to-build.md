@@ -1,3 +1,8 @@
+### Overview
+
+the steps here has verified on Ubutun 20.04, Ubutun 24.04:
+
+follow the steps below to generate the specified Android APK in a <b>fresh and clean</b> Ubuntu 24.04. the generated Android APK can be installed and run properly on Android phones equipped with Qualcomm Snapdragon 8Gen3 and 8Elite.
 
 ### Fetch source codes
 ```
@@ -22,7 +27,7 @@ git checkout master
     ./build/prebuild.sh
     ```
 
- - download Android-NDK and Android-SDK for **command-line mode build**
+ - download Android-NDK and Android-SDK and necessary LLVM toolchain for **command-line mode build**
 
    run below script accordingly
     ```
@@ -31,57 +36,15 @@ git checkout master
     ./build/prebuild-download.sh
 
     ```
- - download and install Android Studio manually
+ - download and install Android Studio manually (can be skipped for AI experts/researchers)
 
    download Android Studio Jellyfish (| 2023.3.1 April 30, 2024) from https://developer.android.com/studio/archive
 ![Screenshot from 2025-05-07 22-06-08](https://github.com/user-attachments/assets/bb801dfe-57a7-4832-a40d-bd1e39c9904e)
 
-- vim settings (can be skipped for non-vim users)
-
-
-    borrow from http://ffmpeg.org/developer.html#Editor-configuration
-
-    ```
-    set ai
-    set nu
-    set expandtab
-    set tabstop=4
-    set shiftwidth=4
-    set softtabstop=4
-    set noundofile
-    set nobackup
-    set fileformat=unix
-    set undodir=~/.undodir
-    set cindent
-    set cinoptions=(0
-    " Allow tabs in Makefiles.
-    autocmd FileType make,automake set noexpandtab shiftwidth=8 softtabstop=8
-    " Trailing whitespace and tabs are forbidden, so highlight them.
-    highlight ForbiddenWhitespace ctermbg=red guibg=red
-    match ForbiddenWhitespace /\s\+$\|\t/
-    " Do not highlight spaces at the end of line while typing on that line.
-    autocmd InsertEnter * match ForbiddenWhitespace /\t\|\s\+\%#\@<!$/
-
-    ```
-
-
-
- - remove the hardcoded debug flag in Android NDK <a href="https://github.com/android-ndk/ndk/issues/243">android-ndk issue</a>
-
-    ```
-
-    # open $ANDROID_NDK/build/cmake/android.toolchain.cmake for ndk < r23
-    # or $ANDROID_NDK/build/cmake/android-legacy.toolchain.cmake for ndk >= r23
-    # delete "-g" line
-    list(APPEND ANDROID_COMPILER_FLAGS
-    -g
-    -DANDROID
-
-    ```
 
 ### Build
 
-#### Build with Android Studio IDE
+#### Build with Android Studio IDE(can be skipped for AI experts/researchers)
 
 build the entire project by Android Studio IDE
 
@@ -103,4 +66,4 @@ build the entire project by Android Studio IDE
 - modify <a href="https://github.com/zhouwg/kantv/blob/master/core/ggml/CMakeLists.txt#L12">ggml/CMakeLists.txt#L12</a> accordingly if target Android phone is <b>NOT</b> equipped with Qualcomm mobile SoC
 
 #### How to build project for Android phone equipped with Qualcomm high-end mobile SoC
-- modify <a href="https://github.com/zhouwg/kantv/blob/master/core/ggml/CMakeLists.txt#L46">ggml/CMakeLists.txt#L46</a> accordingly if target Android phone is equipped with Qualcomm Snapdragon 8Gen3 series SoC or Qualcomm Snapdragon 8Elite series mobile SoC
+- modify <a href="https://github.com/zhouwg/kantv/blob/master/core/ggml/CMakeLists.txt#L68">ggml/CMakeLists.txt#L68</a> accordingly if target Android phone is equipped with Qualcomm Snapdragon 8Gen3 series SoC or Qualcomm Snapdragon 8Elite series mobile SoC
