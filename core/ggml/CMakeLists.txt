@@ -11,7 +11,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # set it to OFF if target Android phone is not Qualcomm SoC based phone
 set(GGML_ENABLE_HEXAGON             ON)
 
-set(GGML_ENABLE_STABLEDIFFUSION     ON)
+set(GGML_ENABLE_STABLEDIFFUSION     OFF)
 
 # self-contained build with internal customized/tailored QNN-SDK and Hexagon-SDK,
 # without download fully official QNN-SDK and Hexagon-SDK.
@@ -23,6 +23,7 @@ set(GGML_SRC_DIR                ${CMAKE_SOURCE_DIR}/ggml)
 set(WHISPERCPP_SRC_DIR          ${GGML_SRC_DIR}/whispercpp/)
 set(LLAMACPP_SRC_DIR            ${GGML_SRC_DIR}/llamacpp/)
 set(SDCPP_SRC_DIR               ${GGML_SRC_DIR}/stablediffusioncpp/)
+set(PREBUILT_PATH               ${GGML_SRC_DIR}/../../prebuilts/)
 set(PREBUILT_LIB_PATH           ${GGML_SRC_DIR}/../../android/kantvplayer/src/main/jniLibs/${ANDROID_ABI}/)
 set(PREBUILT_INC_PATH           ${GGML_SRC_DIR}/../../prebuilts/include/)
 set(KANTV_GGMLJNI_SRC_DIR       ${GGML_SRC_DIR}/jni/)
@@ -37,6 +38,9 @@ endif()
 
 set(QNN_INC_PATH                ${QNN_SDK_PATH}/include/QNN/)
 set(QNN_LIB_PATH                ${QNN_SDK_PATH}/lib/aarch64-android/)
+set(OpenCV_DIR                  ${PREBUILT_PATH}/opencv-mobile-4.9.0-android/sdk/native/jni)
+set(NCNN_DIR                    ${CMAKE_SOURCE_DIR}/ncnn)
+set(NCNN_SRC_DIR                ${CMAKE_SOURCE_DIR}/ncnn/ncnn-src)
 
 set(OPT_FLAG                    " ")
 
@@ -54,6 +58,9 @@ message("QNN_SDK_PATH         : ${QNN_SDK_PATH}")
 message("QNN_INC_PATH         : ${QNN_INC_PATH}")
 message("QNN_LIB_PATH         : ${QNN_LIB_PATH}")
 message("HEXAGON_SDK_PATH     : ${HEXAGON_SDK_PATH}")
+message("OpenCV_DIR           : ${OpenCV_DIR}")
+message("NCNN_DIR             : ${NCNN_DIR}")
+message("NCNN_SRC_DIR         : ${NCNN_SRC_DIR}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(DEBUG_FLAG "-DDEBUG -Wall")
@@ -92,9 +99,9 @@ if (GGML_ENABLE_HEXAGON)
     #check optimization flags
     if(DEFINED HTP_ARCH_VERSION)
         if (${HTP_ARCH_VERSION} STREQUAL "v75" OR ${HTP_ARCH_VERSION} STREQUAL "v79")
+            set(OPT_FLAG " -O3 -march=armv8.7-a -mcpu=cortex-x1 -mtune=cortex-x1 -flto -D_GNU_SOURCE -fvectorize -ffp-model=fast -fno-finite-math-only")
             #refer to:https://github.com/kantv-ai/kantv/issues/287
-            #set(OPT_FLAG " -O3 -march=armv8.7-a -mcpu=cortex-x1 -mtune=cortex-x1 -flto -D_GNU_SOURCE -fvectorize -ffp-model=fast -fno-finite-math-only")
-            set(OPT_FLAG " -O3 -march=armv8.7-a -flto -D_GNU_SOURCE -fvectorize -ffp-model=fast -fno-finite-math-only")
+            #set(OPT_FLAG " -O3 -march=armv8.7-a -flto -D_GNU_SOURCE -fvectorize -ffp-model=fast -fno-finite-math-only")
         else()
             set(OPT_FLAG " -mcpu=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8")
         endif()
@@ -121,6 +128,8 @@ include_directories(${LLAMACPP_SRC_DIR}/common/)
 include_directories(${LLAMACPP_SRC_DIR}/common/minja/)
 include_directories(${KANTV_MEDIA_SRC_DIR}/include) # kantv-asr.h
 include_directories(${SDCPP_SRC_DIR}/)
+include_directories(${OpenCV_DIR}/include/)
+include_directories(${NCNN_SRC_DIR}/include/)
 
 if (GGML_ENABLE_HEXAGON)
 include_directories(${LLAMACPP_SRC_DIR}/ggml/src/ggml-hexagon)
@@ -214,6 +223,7 @@ set(SOURCE_FILES
         ${KANTV_GGMLJNI_SRC_DIR}/ggml-jni-impl-external.cpp
         ${KANTV_GGMLJNI_SRC_DIR}/llm-inference.cpp
         ${KANTV_GGMLJNI_SRC_DIR}/sd-inference.cpp
+        ${KANTV_GGMLJNI_SRC_DIR}/ndkcamera.cpp
 )
 
 add_definitions(-DTARGET_ANDROID)
@@ -271,6 +281,8 @@ else()
 endif()
 
 find_library(LOG_LIB log)
+set(CMAKE_MODULE_PATH "${OpenCV_DIR};${CMAKE_MODULE_PATH}")
+find_package(OpenCV REQUIRED core imgproc)
 
 add_library(kantvmedia
         SHARED
@@ -302,9 +314,9 @@ function(build_library target_name)
         #file(GLOB allPrebuiltQNNLibs "${QNN_LIB_PATH}/libQnn*.so")
         #file(COPY ${allPrebuiltQNNLibs}  DESTINATION ${PREBUILT_LIB_PATH}/ )
         #target_link_libraries(${target_name} ${LOG_LIB} kantvmedia android ${allPrebuiltQNNLibs})
-        target_link_libraries(${target_name} ${LOG_LIB} kantvmedia android cdsprpc)
+        target_link_libraries(${target_name} ${LOG_LIB} kantvmedia android cdsprpc ${OpenCV_LIBS} camera2ndk mediandk ncnn)
     else()
-        target_link_libraries(${target_name} ${LOG_LIB} kantvmedia android)
+        target_link_libraries(${target_name} ${LOG_LIB} kantvmedia android ${OpenCV_LIBS} camera2ndk mediandk ncnn)
     endif()
 
 endfunction()

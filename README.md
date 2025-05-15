@@ -17,7 +17,7 @@ KanTV("Kan", aka English "watch") , an open source project focus on study and pr
 
 - Well-maintained <b>turn-key / self-contained</b> workbench for AI beginners to learning on-device AI technology on Android.
 
-- Built-in [Gemma3-4B(text-to-text and image-to-text(multimodal))](https://huggingface.co/ggml-org/gemma-3-4b-it-GGUF/tree/main), [Gemma3-12B](https://huggingface.co/ggml-org/gemma-3-12b-it-GGUF/) , [Qwen1.5-1.8B](https://huggingface.co/Qwen/Qwen1.5-1.8B-Chat-GGUF), [Qwen2.5-3B](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF), [Qwen2.5-VL-3B](https://huggingface.co/ggml-org/Qwen2.5-VL-3B-Instruct-GGUF), [Qwen3-4B](https://huggingface.co/Qwen/Qwen3-4B/tree/main), [Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B) supportive and runs entirely <b>offline(no Internet required)</b>. these LLM models can be downloadded in the Android APK directly without manually preparation(directly access to huggingface.co is required for this feature). APK's users can compare the <b>real experience</b> of these LLM models on the Android phone.
+- Built-in [Gemma3-4B(text-to-text and image-to-text(multimodal))](https://huggingface.co/ggml-org/gemma-3-4b-it-GGUF/tree/main), [Gemma3-12B](https://huggingface.co/ggml-org/gemma-3-12b-it-GGUF/) , [Qwen1.5-1.8B](https://huggingface.co/Qwen/Qwen1.5-1.8B-Chat-GGUF), [Qwen2.5-3B](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct-GGUF), [Qwen2.5-VL-3B](https://huggingface.co/ggml-org/Qwen2.5-VL-3B-Instruct-GGUF), [Qwen3-4B](https://huggingface.co/Qwen/Qwen3-4B/tree/main), [Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B), [SmolVLM-500M-Instruct](https://huggingface.co/ggml-org/SmolVLM-500M-Instruct-GGUF/tree/main) supportive and runs entirely <b>offline(no Internet required)</b>. these LLM models can be downloadded in the Android APK directly without manually preparation(directly access to huggingface.co is required for this feature). APK's users can compare the <b>real experience</b> of these LLM models on the Android phone.
 
 - Text2Image on Android phone via the amazing [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp).
 
@@ -25,7 +25,7 @@ KanTV("Kan", aka English "watch") , an open source project focus on study and pr
 
 ### Software architecture of KanTV Android
 
-![Image](https://github.com/user-attachments/assets/006ace20-20be-414c-b1f9-d185af438ec3)
+![Image](https://github.com/user-attachments/assets/68e6e7ff-6b45-4bb8-a07a-c692fe7d05ba)
 
 ### Building the project
 
@@ -34,7 +34,7 @@ KanTV("Kan", aka English "watch") , an open source project focus on study and pr
 - Download pre-built Android APK from Github CI-build: https://github.com/kantv-ai/kantv/actions/
 
 ### Run Android APK on Android phone
-- Android 5.1 --- Android 15 and higher version with <b>ANY</b> mainstream mobile SoC might/should/could be supported.
+- Android 7.0(2016.08) --- Android 15(2024.10) and higher version with <b>ANY</b> mainstream mobile SoC.
 - Android smartphone equipped with <b>ANY</b> mainstream <b>high-end</b> mobile SoC is highly <b>recommented</b> for realtime AI-subtitle feature otherwise unexpected behavior would happen.
 - Android smartphone equipped with one of below Qualcomm mobile SoCs(Qualcomm's state-of-the-art high-end mobile SoC <b>Snapdragon 8Gen3 series and Snapdragon 8Elite series</b> are highly recommended) <b>is required</b> for verify/running ggml-hexagon backend on Android phone:
 ```
@@ -105,6 +105,12 @@ a screenshot to demostrate download LLM model in APK.
 - [Roadmap](https://github.com/kantv-ai/kantv/discussions/262)
 
 
+### Contribution
+
+Report issue in Android phone equipped with <b>mainstream</b> mobile SoC or submit PR to this project is greatly welcomed.
+
+We use [GitHub issues](https://github.com/kantv-ai/kantv/issues) for tracking feature requests and issue reports, please see [how to submit issue in this project ](https://github.com/kantv-ai/kantv/issues/1).
+
 <!--
 comment out this section because some contributors in the upstream project might-be don't want to be appeared here
 
@@ -142,6 +148,10 @@ comment out this section because some contributors in the upstream project might
 
   <li>
    Text2Image engine <a href="https://github.com/leejet/stable-diffusion.cpp">stable-diffusion.cpp</a>
+  </li>
+
+  <li>
+   CV engine <a href="https://github.com/nihui/opencv-mobile">opencv-mobile</a>
   </li>
 
   </ul>
