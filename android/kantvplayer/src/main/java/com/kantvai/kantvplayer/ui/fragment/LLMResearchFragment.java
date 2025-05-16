@@ -398,7 +398,7 @@
         selectModeFile = new File(selectModelFilePath);
         if (!selectModeFile.exists()) {
             KANTVUtils.showMsgBox(mActivity, "pls check whether model file:" +
-                    selectModeFile.getAbsolutePath() + " exist and down from " + LLMModelURL);
+                    selectModeFile.getAbsolutePath() + " exist and download from " + LLMModelURL + " in LLM Setting");
             return false;
         }
         return true;
