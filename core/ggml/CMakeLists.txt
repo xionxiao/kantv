@@ -99,7 +99,7 @@ if (GGML_ENABLE_HEXAGON)
     #check optimization flags
     if(DEFINED HTP_ARCH_VERSION)
         if (${HTP_ARCH_VERSION} STREQUAL "v75" OR ${HTP_ARCH_VERSION} STREQUAL "v79")
-            set(OPT_FLAG " -O3 -march=armv8.7-a -mcpu=cortex-x1 -mtune=cortex-x1 -flto -D_GNU_SOURCE -fvectorize -ffp-model=fast -fno-finite-math-only")
+            set(OPT_FLAG " -O3 -march=armv8.7-a -mcpu=cortex-x1 -mtune=cortex-x1 -ffp-model=fast -fno-finite-math-only")
             #refer to:https://github.com/kantv-ai/kantv/issues/287
             #set(OPT_FLAG " -O3 -march=armv8.7-a -flto -D_GNU_SOURCE -fvectorize -ffp-model=fast -fno-finite-math-only")
         else()
@@ -189,6 +189,7 @@ set(SOURCE_FILES
         ${LLAMACPP_SRC_DIR}/src/llama-mmap.cpp
         ${LLAMACPP_SRC_DIR}/src/llama-model.cpp
         ${LLAMACPP_SRC_DIR}/src/llama-model-loader.cpp
+        ${LLAMACPP_SRC_DIR}/src/llama-model-saver.cpp
         ${LLAMACPP_SRC_DIR}/src/llama-quant.cpp
         ${LLAMACPP_SRC_DIR}/src/llama-sampling.cpp
         ${LLAMACPP_SRC_DIR}/src/llama-vocab.cpp
@@ -209,9 +210,10 @@ set(SOURCE_FILES
         ${LLAMACPP_SRC_DIR}/common/sampling.cpp
         ${LLAMACPP_SRC_DIR}/common/speculative.cpp
 
-        ${LLAMACPP_SRC_DIR}/examples/llava/mtmd.cpp
-        ${LLAMACPP_SRC_DIR}/examples/llava/clip.cpp
-        ${LLAMACPP_SRC_DIR}/examples/llava/mtmd-cli.cpp
+        ${LLAMACPP_SRC_DIR}/tools/mtmd/mtmd.cpp
+        ${LLAMACPP_SRC_DIR}/tools/mtmd/mtmd-helper.cpp
+        ${LLAMACPP_SRC_DIR}/tools/mtmd/clip.cpp
+        ${LLAMACPP_SRC_DIR}/tools/mtmd/mtmd-cli.cpp
 
         ${WHISPERCPP_SRC_DIR}/whisper.cpp
 
