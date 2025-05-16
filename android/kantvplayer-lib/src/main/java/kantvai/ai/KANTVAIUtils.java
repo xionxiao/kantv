@@ -125,18 +125,30 @@
              systemInfo = ggmljava.asr_get_systeminfo();
          else if (inference_type == INFERENCE_LLM)
              systemInfo = ggmljava.llm_get_systeminfo();
+         else if (inference_type == INFERENCE_LLMAVA)
+             systemInfo = ggmljava.llm_get_systeminfo();
          else
              systemInfo = "unknown system info of unsupported inference type:" + Integer.toString(inference_type) + " ";
 
-         String deviceInfo = "Device info:" + " "
-                 + Build.BRAND + " "
-                 + Build.HARDWARE + " "
-                 + "Android " + android.os.Build.VERSION.RELEASE + " "
-                 + "Arch:" + Build.CPU_ABI + " "
-                 + "(" + systemInfo + ")" + " "
-                 + "Mem:total " + (totalMem >> 20) + "MB"  + " "
-                 + "available " + (availMem >> 20) + "MB"   + " "
-                 + "usage " + (totalUsageMemory >> 10) + "MB";
+         String deviceInfo = null;
+
+         if (inference_type == INFERENCE_LLMAVA) {
+             deviceInfo = "Device info:" + " "
+                     + Build.HARDWARE + " "
+                     + "Android " + Build.VERSION.RELEASE + " "
+                     + "Arch:" + Build.CPU_ABI + " "
+                     + "(" + systemInfo + ")" + " ";
+         } else {
+             deviceInfo = "Device info:" + " "
+                     + Build.BRAND + " "
+                     + Build.HARDWARE + " "
+                     + "Android " + Build.VERSION.RELEASE + " "
+                     + "Arch:" + Build.CPU_ABI + " "
+                     + "(" + systemInfo + ")" + " "
+                     + "Mem:total " + (totalMem >> 20) + "MB" + " "
+                     + "available " + (availMem >> 20) + "MB" + " "
+                     + "usage " + (totalUsageMemory >> 10) + "MB";
+         }
 
          return deviceInfo;
      }

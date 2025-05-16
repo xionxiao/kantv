@@ -94,28 +94,6 @@ extern "C" {
 
 #include "llamacpp/ggml/include/ggml-hexagon.h"
 
-#include <android/asset_manager_jni.h>
-#include <android/native_window_jni.h>
-#include <android/native_window.h>
-#include <android/bitmap.h>
-#include <android/log.h>
-
-//ncnn
-#include "platform.h"
-#include "benchmark.h"
-#include "net.h"
-#include "gpu.h"
-
-//opencv-android
-#include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-
-#include "ndkcamera.h"
-
-#if __ARM_NEON
-#include <arm_neon.h>
-#endif // __ARM_NEON
-
 // =================================================================================================
 //
 // JNI helper function for llama.cpp
@@ -7530,6 +7508,18 @@ int llava_inference(const char *sz_model_path, const char *sz_mmproj_model_path,
         LOGGD("pls check params\n");
         return 1;
     }
+
+    if (0 != access(sz_model_path, F_OK)) {
+        return 1;
+    }
+
+    if (0 != access(sz_mmproj_model_path, F_OK)) {
+        return 1;
+    }
+
+    if (0 != access(img_path, F_OK)) {
+        return 1;
+    }
     //this is a lazy/dirty method for merge latest source codes of upstream llama.cpp on Android port
     //easily and quickly,so we can do everything in native C/C++ layer rather than write a complicated Java wrapper
     int argc = 11;
@@ -7544,7 +7534,7 @@ int llava_inference(const char *sz_model_path, const char *sz_mmproj_model_path,
     ret = llava_inference_main(argc, const_cast<char **>(argv), n_backend_type);
     inference_reset_running_state();
 
-    LOGGD("ret %d", ret);
+    LOGGD("llava_inference return %d", ret);
     return ret;
 }
 
@@ -7593,134 +7583,3 @@ int sd_inference(const char *sz_model_path, const char *sz_aux_model_path, const
     LOGGD("ret %d", ret);
     return ret;
 }
-
-
-static ncnn::Mutex ncnn_lock;
-class MyNdkCamera : public NdkCameraWindow {
-public:
-    virtual void on_image_render(cv::Mat &rgb) const;
-};
-
-static int draw_unsupported(cv::Mat &rgb) {
-    const char text[] = "unsupported";
-
-    int baseLine = 0;
-    cv::Size label_size = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, 1.0, 1, &baseLine);
-
-    int y = (rgb.rows - label_size.height) / 2;
-    int x = (rgb.cols - label_size.width) / 2;
-
-    cv::rectangle(rgb, cv::Rect(cv::Point(x, y),
-                                cv::Size(label_size.width, label_size.height + baseLine)),
-                  cv::Scalar(255, 255, 255), -1);
-
-    cv::putText(rgb, text, cv::Point(x, y + label_size.height),
-                cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 0, 0));
-
-    return 0;
-}
-
-static int draw_fps(cv::Mat & rgb) {
-    // resolve moving average
-    float avg_fps = 0.f;
-    {
-        static double t0 = 0.f;
-        static float fps_history[10] = {0.f};
-
-        double t1 = ncnn::get_current_time();
-        if (t0 == 0.f) {
-            t0 = t1;
-            return 0;
-        }
-
-        float fps = 1000.f / (t1 - t0);
-        t0 = t1;
-
-        for (int i = 9; i >= 1; i--) {
-            fps_history[i] = fps_history[i - 1];
-        }
-        fps_history[0] = fps;
-
-        if (fps_history[9] == 0.f) {
-            return 0;
-        }
-
-        for (int i = 0; i < 10; i++) {
-            avg_fps += fps_history[i];
-        }
-        avg_fps /= 10.f;
-    }
-
-    char text[32];
-    snprintf(text, 32,"FPS=%.2f", avg_fps);
-
-    int baseLine = 0;
-    cv::Size label_size = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine);
-
-    int y = 0;
-    int x = rgb.cols - label_size.width;
-
-    cv::rectangle(rgb, cv::Rect(cv::Point(x, y),
-                                cv::Size(label_size.width, label_size.height + baseLine)),
-                  cv::Scalar(255, 255, 255), -1);
-
-    cv::putText(rgb, text, cv::Point(x, y + label_size.height),
-                cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
-
-    return 0;
-}
-
-void MyNdkCamera::on_image_render(cv::Mat & rgb) const {
-    draw_fps(rgb);
-}
-
-static MyNdkCamera * g_camera = NULL;
-
-extern "C" {
-
-JNIEXPORT jint JNI_OnLoad(JavaVM * vm, void * reserved) {
-    LOGGD("JNI_OnLoad");
-
-    ncnn::create_gpu_instance();
-
-    g_camera = new MyNdkCamera;
-
-    return JNI_VERSION_1_4;
-}
-
-JNIEXPORT void JNI_OnUnload(JavaVM * vm, void * reserved) {
-    LOGGD("JNI_OnUnload");
-    ncnn::destroy_gpu_instance();
-    delete g_camera;
-    g_camera = NULL;
-}
-
-JNIEXPORT jboolean JNICALL
-Java_kantvai_ai_ggmljava_openCamera(JNIEnv * env, jclass clazz, jint facing) {
-    if (facing < 0 || facing > 1)
-        return JNI_FALSE;
-
-    LOGGD("openCamera %d", facing);
-
-    g_camera->open((int) facing);
-
-    return JNI_TRUE;
-}
-
-JNIEXPORT void JNICALL
-Java_kantvai_ai_ggmljava_closeCamera(JNIEnv * env, jclass clazz) {
-    LOGGD("closeCamera");
-
-    g_camera->close();
-}
-
-JNIEXPORT void JNICALL
-Java_kantvai_ai_ggmljava_setOutputWindow(JNIEnv * env, jclass clazz, jobject surface) {
-    ANativeWindow *win = ANativeWindow_fromSurface(env, surface);
-
-    LOGGD("setOutputWindow %p", win);
-
-    g_camera->set_window(win);
-}
-
-} //end extern "C" {

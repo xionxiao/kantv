@@ -71,4 +71,4 @@ build the entire project by Android Studio IDE
 
 #### How to build project for Android phone equipped with Qualcomm high-end mobile SoC
 
-- modify <a href="https://github.com/zhouwg/kantv/blob/master/core/ggml/CMakeLists.txt#L79">ggml/CMakeLists.txt#L79</a> accordingly if target Android phone is equipped with Qualcomm Snapdragon 8Gen3 series SoC or Qualcomm Snapdragon 8Elite series mobile SoC
+- modify <a href="https://github.com/zhouwg/kantv/blob/master/core/ggml/CMakeLists.txt#L86">ggml/CMakeLists.txt#L86</a> accordingly if target Android phone is equipped with Qualcomm Snapdragon 8Gen3 series SoC or Qualcomm Snapdragon 8Elite series mobile SoC

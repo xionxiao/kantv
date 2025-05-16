@@ -38,6 +38,16 @@ enum ggml_jni_bench_type {
     GGML_BENCHMARK_TEXT2IMAGE,                //Text2Image benchmark through stablediffusion.cpp
     GGML_BENCHMARK_MAX
 };
+
+//keep sync with ggml-hexagon.cpp
+//0: general approach through QNN:offload ggmlop to QNN
+//1: special approach through QNN-SINGLEGRAPH:mapping entire ggml cgraph to a single QNN graph
+//2: general approach through Hexagon cDSP:offload ggmlop to Hexagon cDSP directly
+enum hwaccel_approach_type {
+    HWACCEL_QNN                     = 0,
+    HWACCEL_QNN_SINGLEGRAPH         = 1,
+    HWACCEL_CDSP                    = 2,
+};
 //=============================================================================================
 
 
@@ -123,6 +133,7 @@ enum ggml_jni_bench_type {
     void         inference_reset_running_state(void);
     void         inference_reset_running_state(void);
     int          inference_is_running_state(void);
+    void         inference_init_running_state(void);
 
     /**
     * multi-modal inference
@@ -154,6 +165,8 @@ enum ggml_jni_bench_type {
     int          sd_inference(const char * model_path, const char * aux_model_path,
                              const char * prompt, int llm_type, int num_threads, int backend_type, int hwaccel_type);
     int          sd_inference_main(int argc, const char * argv[], int backend);
+
+    int          write_bmp(const char * filename, int width, int height, int bpp, const unsigned char * data);
 
 #ifdef __cplusplus
 }

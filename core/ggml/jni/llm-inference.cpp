@@ -96,8 +96,6 @@ int llama_inference_main(int argc, char ** argv, int backend_type) {
     int llm_inference_interrupted = 0;
     common_params params;
     g_params = &params;
-    int max_tokens = 0;
-    int64_t start_duration = ggml_time_ms();
     if (!common_params_parse(argc, argv, params, LLAMA_EXAMPLE_MAIN, print_usage)) {
         return 1;
     }
@@ -119,15 +117,6 @@ int llama_inference_main(int argc, char ** argv, int backend_type) {
     common_init();
 
     auto & sparams = params.sampling;
-
-    if (params.logits_all) {
-        LOG_ERR("************\n");
-        LOG_ERR("%s: please use the 'perplexity' tool for perplexity calculations\n", __func__);
-        LOG_ERR("************\n\n");
-
-        return 0;
-    }
-
     if (params.embedding) {
         LOG_ERR("************\n");
         LOG_ERR("%s: please use the 'embedding' tool for embedding calculations\n", __func__);
@@ -150,7 +139,6 @@ int llama_inference_main(int argc, char ** argv, int backend_type) {
     }
 
     LOG_INF("%s: llama backend init\n", __func__);
-    LOGGD("%s: llama backend init\n", __func__);
 
     llama_backend_init();
     llama_numa_init(params.numa);
@@ -182,7 +170,14 @@ int llama_inference_main(int argc, char ** argv, int backend_type) {
 
     LOG_INF("%s: llama threadpool init, n_threads = %d\n", __func__, (int) params.cpuparams.n_threads);
 
-    auto * reg = ggml_backend_dev_backend_reg(ggml_backend_dev_by_type(GGML_BACKEND_DEVICE_TYPE_CPU));
+    auto * cpu_dev = ggml_backend_dev_by_type(GGML_BACKEND_DEVICE_TYPE_CPU);
+    if (!cpu_dev) {
+        LOG_ERR("%s: no CPU backend found\n", __func__);
+        LOGGD("%s: no CPU backend found\n", __func__);
+        GGML_JNI_NOTIFY("%s: no CPU backend found\n", __func__);
+        return 1;
+    }
+    auto * reg = ggml_backend_dev_backend_reg(cpu_dev);
     auto * ggml_threadpool_new_fn = (decltype(ggml_threadpool_new) *) ggml_backend_reg_get_proc_address(reg, "ggml_threadpool_new");
     auto * ggml_threadpool_free_fn = (decltype(ggml_threadpool_free) *) ggml_backend_reg_get_proc_address(reg, "ggml_threadpool_free");
 
@@ -744,7 +739,6 @@ int llama_inference_main(int argc, char ** argv, int backend_type) {
 
                 // Console/Stream Output
                 //LOG("%s", token_str.c_str());
-                max_tokens++;
 #if (defined __ANDROID__) || (defined ANDROID)
                 if (ggml_jni_is_valid_utf8(token_str.c_str())) {
                     if (0 == inference_is_running_state()) {
@@ -961,20 +955,6 @@ int llama_inference_main(int argc, char ** argv, int backend_type) {
                 waiting_for_first_input = false;
             }
         }
-#if (defined __ANDROID__) || (defined ANDROID)
-#if 0  //dirty method to fix issue:https://github.com/zhouwg/kantv/issues/116, it seems not required from now on
-        if (max_tokens > 300) {
-
-            GGML_JNI_NOTIFY("\n[end of text]\n\n");
-            break;
-        }
-        int64_t end_duration = ggml_time_ms();
-        if (end_duration - start_duration > 60000) {
-            GGML_JNI_NOTIFY("\n[end of text]\n\n");
-            break;
-        }
-#endif
-#endif
 
         if (0 == inference_is_running_state()) {
             llm_inference_interrupted = 1;

@@ -7,6 +7,7 @@
 #include "console.h"
 #include "chat.h"
 #include "mtmd.h"
+
 #include <vector>
 #include <limits.h>
 #include <cinttypes>
@@ -71,7 +72,7 @@ static void sigint_handler(int signo) {
 #endif
 
 struct mtmd_cli_context {
-    mtmd_context_ptr ctx_vision;
+    mtmd::context_ptr ctx_vision;
     common_init_result llama_init;
 
     llama_model       * model;
@@ -79,6 +80,8 @@ struct mtmd_cli_context {
     const llama_vocab * vocab;
     llama_batch         batch;
     int                 n_batch;
+
+    mtmd::bitmaps bitmaps;
 
     // note: we know that gemma3 template is "linear", meaning each turn is completely separated to another
     // so here we don't need to keep track of chat history
@@ -98,10 +101,15 @@ struct mtmd_cli_context {
         batch = llama_batch_init(params.n_batch, 0, 1);
         n_batch = params.n_batch;
 
+        if (!model || !lctx) {
+            exit(1);
+        }
+
         if (!llama_model_chat_template(model, nullptr) && params.chat_template.empty()) {
             LOG_ERR("Model does not have chat template.\n");
             LOG_ERR("  For old llava models, you may need to use '--chat-template vicuna'\n");
             LOG_ERR("  For MobileVLM models, use '--chat-template deepseek'\n");
+            LOG_ERR("  For Mistral Small 3.1, use '--chat-template mistral-v7'\n");
             exit(1);
         }
 
@@ -120,12 +128,12 @@ struct mtmd_cli_context {
 
     void init_vision_context(common_params & params) {
         const char * clip_path = params.mmproj.path.c_str();
-        ctx_vision.reset(mtmd_init_from_file(clip_path, model, mtmd_context_params{
-            /* use_gpu */   params.mmproj_use_gpu,
-            /* timings */   true,
-            /* n_threads */ params.cpuparams.n_threads,
-            /* verbosity */ params.verbosity > 0 ? GGML_LOG_LEVEL_DEBUG : GGML_LOG_LEVEL_INFO,
-        }));
+        mtmd_context_params mparams = mtmd_context_params_default();
+        mparams.use_gpu = params.mmproj_use_gpu;
+        mparams.print_timings = true;
+        mparams.n_threads = params.cpuparams.n_threads;
+        mparams.verbosity = params.verbosity > 0 ? GGML_LOG_LEVEL_DEBUG : GGML_LOG_LEVEL_INFO;
+        ctx_vision.reset(mtmd_init_from_file(clip_path, model, mparams));
         if (!ctx_vision.get()) {
             LOG_ERR("Failed to load vision model from %s\n", clip_path);
             exit(1);
@@ -142,6 +150,15 @@ struct mtmd_cli_context {
             antiprompt_tokens.begin()
         );
     }
+
+    bool load_image(const std::string & fname) {
+        mtmd::bitmap bmp(mtmd_helper_bitmap_init_from_file(fname.c_str()));
+        if (!bmp.ptr) {
+            return false;
+        }
+        bitmaps.entries.push_back(std::move(bmp));
+        return true;
+    }
 };
 
 static int generate_response(mtmd_cli_context & ctx, common_sampler * smpl, int n_predict) {
@@ -149,7 +166,7 @@ static int generate_response(mtmd_cli_context & ctx, common_sampler * smpl, int 
     llama_tokens generated_tokens;
     for (int i = 0; i < n_predict; i++) {
         if (i > n_predict || !g_is_generating || g_is_interrupted) {
-            printf("\n");
+            LOG("\n");
             break;
         }
 
@@ -158,7 +175,7 @@ static int generate_response(mtmd_cli_context & ctx, common_sampler * smpl, int 
         common_sampler_accept(smpl, token_id, true);
 
         if (llama_vocab_is_eog(ctx.vocab, token_id) || ctx.check_antiprompt(generated_tokens)) {
-            printf("\n");
+            LOG("\n");
             break; // end of generation
         }
 
@@ -173,8 +190,9 @@ static int generate_response(mtmd_cli_context & ctx, common_sampler * smpl, int 
             }
         }
 #endif
+
         if (g_is_interrupted) {
-            printf("\n");
+            LOG("\n");
             break;
         }
 
@@ -191,40 +209,34 @@ static int generate_response(mtmd_cli_context & ctx, common_sampler * smpl, int 
     return 0;
 }
 
-static int eval_message(mtmd_cli_context & ctx, common_chat_msg & msg, std::vector<std::string> & images_fname, bool add_bos = false) {
-    std::vector<mtmd_bitmap> bitmaps;
-
+static int eval_message(mtmd_cli_context & ctx, common_chat_msg & msg, bool add_bos = false) {
     common_chat_templates_inputs tmpl_inputs;
     tmpl_inputs.messages = {msg};
     tmpl_inputs.add_generation_prompt = true;
     tmpl_inputs.use_jinja = false; // jinja is buggy here
     auto formatted_chat = common_chat_templates_apply(ctx.tmpls.get(), tmpl_inputs);
+    LOG_DBG("formatted_chat.prompt: %s\n", formatted_chat.prompt.c_str());
     LOGGD("formatted_chat.prompt: %s\n", formatted_chat.prompt.c_str());
 #if (defined __ANDROID__) || (defined ANDROID)
     if (0 == inference_is_running_state()) {
         return AI_INFERENCE_INTERRUPTED;
-    } else {
-        GGML_JNI_NOTIFY("formatted_chat.prompt: %s\n", formatted_chat.prompt.c_str());
     }
 #endif
 
-    for (auto & fname : images_fname) {
-        mtmd_bitmap bitmap;
-        if (mtmd_helper_bitmap_init_from_file(fname.c_str(), bitmap)) {
-            LOGGD("Unable to load image %s\n", fname.c_str());
-            return 2; // image not found
-        }
-        bitmaps.push_back(std::move(bitmap));
-    }
     mtmd_input_text text;
-    text.text          = formatted_chat.prompt;
+    text.text          = formatted_chat.prompt.c_str();
     text.add_special   = add_bos;
     text.parse_special = true;
-    mtmd_input_chunks chunks;
 
     if (g_is_interrupted) return 0;
 
-    int32_t res = mtmd_tokenize(ctx.ctx_vision.get(), chunks, text, bitmaps);
+    mtmd::input_chunks chunks(mtmd_input_chunks_init());
+    auto bitmaps_c_ptr = ctx.bitmaps.c_ptr();
+    int32_t res = mtmd_tokenize(ctx.ctx_vision.get(),
+                        chunks.ptr.get(), // output
+                        &text, // text
+                        bitmaps_c_ptr.data(),
+                        bitmaps_c_ptr.size());
     if (res != 0) {
         LOG_ERR("Unable to tokenize prompt, res = %d\n", res);
         return 1;
@@ -234,21 +246,29 @@ static int eval_message(mtmd_cli_context & ctx, common_chat_msg & msg, std::vect
     if (0 == inference_is_running_state()) {
         return AI_INFERENCE_INTERRUPTED;
     } else {
-        GGML_JNI_NOTIFY("starting image encoding & decoding, pls waiting(don't stop LLM inference "
-                        "before the first token can be seen, otherwise unexpected behaviour would happen)...\n");
+        GGML_JNI_NOTIFY("starting image encoding & decoding, pls waiting...\n\n");
     }
 #endif
 
-    int result = mtmd_helper_eval(ctx.ctx_vision.get(), ctx.lctx, chunks, ctx.n_past, 0, ctx.n_batch);
-    //if (mtmd_helper_eval(ctx.ctx_vision.get(), ctx.lctx, chunks, ctx.n_past, 0, ctx.n_batch)) {
-    if (result != 0) {
-        LOGGD("Unable to eval prompt\n");
-        if (result == AI_INFERENCE_INTERRUPTED)
-            return AI_INFERENCE_INTERRUPTED;
+    ctx.bitmaps.entries.clear();
+
+    llama_pos new_n_past;
+    if (mtmd_helper_eval_chunks(ctx.ctx_vision.get(),
+                ctx.lctx, // lctx
+                chunks.ptr.get(), // chunks
+                ctx.n_past, // n_past
+                0, // seq_id
+                ctx.n_batch, // n_batch
+                true, // logits_last
+                &new_n_past)) {
+        LOG_ERR("Unable to eval prompt\n");
         return 1;
     }
 
-    ctx.n_past += mtmd_helper_get_n_pos(chunks);
+    ctx.n_past = new_n_past;
+
+    LOG("\n");
+
     return 0;
 }
 
@@ -257,8 +277,8 @@ int llava_inference_main(int argc, char ** argv, int backend_type) {
 
     common_params params;
     params.sampling.temp = 0.2; // lower temp by default for better quality
+
     if (!common_params_parse(argc, argv, params, LLAMA_EXAMPLE_LLAVA, show_additional_info)) {
-        LOGGD("error");
         return 1;
     }
     LOGGD("enter llama_inference_main backend_type %d", backend_type);
@@ -279,20 +299,20 @@ int llava_inference_main(int argc, char ** argv, int backend_type) {
 
     if (params.mmproj.path.empty()) {
         show_additional_info(argc, argv);
-        LOGGD("ERR: Missing --mmproj argument\n");
+        LOG_ERR("ERR: Missing --mmproj argument\n");
         return 1;
     }
 
     mtmd_cli_context ctx(params);
-    LOGGD("%s: %s\n", __func__, params.model.path.c_str());
+    LOG("%s: loading model: %s\n", __func__, params.model.path.c_str());
+    LOGGD("%s: loading model: %s\n", __func__, params.model.path.c_str());
 
-    LOGGD("prompt:%s", params.prompt.c_str());
     bool is_single_turn = !params.prompt.empty() && !params.image.empty();
 
     struct common_sampler * smpl = common_sampler_init(ctx.model, params.sampling);
     int n_predict = params.n_predict < 0 ? INT_MAX : params.n_predict;
 
-    // ctrl+C handling
+    // Ctrl+C handling
     if (0)
     {
 #if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
@@ -320,9 +340,17 @@ int llava_inference_main(int argc, char ** argv, int backend_type) {
         common_chat_msg msg;
         msg.role = "user";
         msg.content = params.prompt;
-        result = eval_message(ctx, msg, params.image, true);
+        for (const auto & image : params.image) {
+            if (!ctx.load_image(image)) {
+                return 1; // error is already printed by libmtmd
+            }
+        }
+        if (eval_message(ctx, msg, true)) {
+            return 1;
+        }
+        //result = eval_message(ctx, msg, true);
         if (0 != result) {
-        //if (eval_message(ctx, msg, params.image, true)) {
+            //if (eval_message(ctx, msg, params.image, true)) {
             if (AI_INFERENCE_INTERRUPTED == result)
                 return AI_INFERENCE_INTERRUPTED;
             return 1;
@@ -334,8 +362,6 @@ int llava_inference_main(int argc, char ** argv, int backend_type) {
 #if (defined __ANDROID__) || (defined ANDROID)
             if (0 == inference_is_running_state()) {
                 return AI_INFERENCE_INTERRUPTED;
-            } else {
-                GGML_JNI_NOTIFY("generate_reponse\n");
             }
 #endif
             int result = generate_response(ctx, smpl, n_predict);
@@ -343,6 +369,7 @@ int llava_inference_main(int argc, char ** argv, int backend_type) {
             if (result == AI_INFERENCE_INTERRUPTED)
                 return result;
         }
+
 
     } else {
         LOG("\n Running in chat mode, available commands:");
@@ -352,7 +379,6 @@ int llava_inference_main(int argc, char ** argv, int backend_type) {
         LOG("\n");
 
         bool is_first_msg = true;
-        std::vector<std::string> images_fname;
         std::string content;
 
         while (!g_is_interrupted) {
@@ -377,10 +403,17 @@ int llava_inference_main(int argc, char ** argv, int backend_type) {
                 continue;
             }
             g_is_generating = true;
-            if (line.find("/image") == 0) {
+            if (line == "/image" || line.find("/image ") == 0) {
+                if (line.size() < 8) {
+                    LOG_ERR("ERR: Missing image filename\n");
+                    continue;
+                }
                 std::string image = line.substr(7);
-                images_fname.push_back(string_strip(image));
-                content += "<__image__>";
+                if (ctx.load_image(image)) {
+                    LOG("Image %s loaded\n", image.c_str());
+                    content += "<__image__>";
+                }
+                // else, error is already printed by libmtmd
                 continue;
             } else {
                 content += line;
@@ -388,21 +421,14 @@ int llava_inference_main(int argc, char ** argv, int backend_type) {
             common_chat_msg msg;
             msg.role = "user";
             msg.content = content;
-            int ret = eval_message(ctx, msg, images_fname, is_first_msg);
-            if (g_is_interrupted) break;
-            if (ret == 2) {
-                // non-fatal error
-                images_fname.clear();
-                content.clear();
-                continue;
-            }
+            int ret = eval_message(ctx, msg, is_first_msg);
             if (ret) {
                 return 1;
             }
+            if (g_is_interrupted) break;
             if (generate_response(ctx, smpl, n_predict)) {
                 return 1;
             }
-            images_fname.clear();
             content.clear();
             is_first_msg = false;
         }

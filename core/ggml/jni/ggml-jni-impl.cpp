@@ -679,6 +679,7 @@ static const char * ggml_jni_transcribe_from_file(const char * sz_model_path, co
         }
         end_time = ggml_time_ms();
         LOGGI("inference cost %d ms\n", end_time - begin_time);
+        GGML_JNI_NOTIFY("ASR inference via whisper.cpp cost %d ms\n\n", end_time - begin_time);
         LOGGV("after calling whisper_full\n");
     }
 

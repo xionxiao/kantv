@@ -5,10 +5,20 @@
     android:layout_height="fill_parent">
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         >
+        <TextView
+            android:id="@+id/agentDeviceInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/agentLLMInfo"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginTop="1dp" />
 
         <Button
             android:id="@+id/buttonSwitchCamera"
@@ -16,21 +26,20 @@
             android:layout_height="wrap_content"
             android:text="switch camera" />
 
-        <TextView
-            android:id="@+id/agentDeviceInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
 
     </LinearLayout>
 
-    <!--
+    <!-- for further usage
+         ggml-backend: cdsp, ggml
+         ggml-model  : multimodal model
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
         <Spinner
-            android:id="@+id/spinnerNCNNNetid"
+            android:id="@+id/spinnerAgentGGMLModel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:dropDownSelector="#63D81B60"
@@ -38,23 +47,15 @@
             android:spinnerMode="dropdown" />
 
         <Spinner
-            android:id="@+id/spinnerNCNNModel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:dropDownSelector="#63D81B60"
-            android:drawSelectorOnTop="true"
-            android:spinnerMode="dropdown" />
-
-        <Spinner
-            android:id="@+id/spinnerNCNNBackend"
+            android:id="@+id/spinnerAgentGGMLBackend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawSelectorOnTop="true"
-            android:entries="@array/ncnn_backend" />
+            android:entries="@array/backendtype" />
 
     </LinearLayout>
+    -->
 
-     -->
     <SurfaceView
         android:id="@+id/cameraview"
         android:layout_width="fill_parent"

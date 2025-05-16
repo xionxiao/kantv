@@ -19,28 +19,20 @@
                 android:id="@+id/ggmlLogo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/ggml_logo" />
 
             <TextView
                 android:id="@+id/ggmlInfo"
-                android:layout_width="match_parent"
-                android:layout_height="140dp" />
-
-            <!--
-            <TextView
-                android:id="@+id/ggmlStatus"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="5dp"
-                android:text=" " />
-             -->
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <EditText
                 android:id="@+id/txtPrompt"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="1dp"
                 android:background="@drawable/textview_border"
                 android:gravity="top"
                 android:hint="introduce the movie Once Upon a Time in America briefly, less then 100 words" />
@@ -94,19 +86,6 @@
                 android:dropDownSelector="#63D81B60"
                 android:spinnerMode="dropdown" />
 
-            <!--
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Accel:" />
-
-            <Spinner
-                android:id="@+id/spinnerAccel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:dropDownSelector="#63D81B60"
-                android:spinnerMode="dropdown" />
-            -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -128,8 +107,8 @@
 
             <Button
                 android:id="@+id/btnSelectImage"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
                 android:layout_marginRight="5dp"
                 android:background="@drawable/button_drawable"
                 android:textAllCaps="false"
@@ -139,20 +118,20 @@
             <Button
                 android:id="@+id/btnBenchmark"
                 android:layout_width="100dp"
-                android:layout_height="30dp"
+                android:layout_height="40dp"
                 android:layout_marginRight="5dp"
                 android:background="@drawable/button_drawable"
-                android:text="Benchmark"
+                android:text="Start"
                 android:textAllCaps="false"
                 android:textColor="#ffffff" />
 
             <Button
                 android:id="@+id/btnStop"
-                android:layout_width="150dp"
-                android:layout_height="30dp"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
                 android:layout_marginRight="5dp"
                 android:background="@drawable/button_drawable"
-                android:text="StopLLMInference"
+                android:text="Stop"
                 android:textAllCaps="false"
                 android:textColor="#ffffff" />
 

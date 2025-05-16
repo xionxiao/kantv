@@ -1,4 +1,4 @@
-int LLAMA_BUILD_NUMBER = 5195;
-char const *LLAMA_COMMIT = "2d451c80";
-char const *LLAMA_COMPILER = "Android (11349228, +pgo, +bolt, +lto, -mlgo, based on r487747e) clang version 17.0.2 (https://android.googlesource.com/toolchain/llvm-project d9f89f4d16663d5012e5c09495f3b30ece3d2362)";
+int LLAMA_BUILD_NUMBER = 5531;
+char const *LLAMA_COMMIT = "d331ba574";
+char const *LLAMA_COMPILER = "Android (12896553, +pgo, +bolt, +lto, +mlgo, based on r530567c) clang version 19.0.0 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)";
 char const *LLAMA_BUILD_TARGET = "x86_64-unknown-linux-gnu";

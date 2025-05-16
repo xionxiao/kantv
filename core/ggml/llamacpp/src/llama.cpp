@@ -4,6 +4,7 @@
 #include "llama-mmap.h"
 #include "llama-vocab.h"
 #include "llama-model-loader.h"
+#include "llama-model-saver.h"
 #include "llama-model.h"
 
 #include "ggml.h"
@@ -100,7 +101,6 @@ static int llama_model_load(const std::string & fname, std::vector<std::string> 
 
     model.t_start_us = tm.t_start_us;
 
-    LOGGD("enter %s", __func__ );
     try {
         llama_model_loader ml(fname, splits, params.use_mmap, params.check_tensors, params.kv_overrides, params.tensor_buft_overrides);
 
@@ -132,6 +132,7 @@ static int llama_model_load(const std::string & fname, std::vector<std::string> 
 
         if (params.vocab_only) {
             LOGGD("%s: vocab only - skipping tensors\n", __func__);
+            LLAMA_LOG_INFO("%s: vocab only - skipping tensors\n", __func__);
             return 0;
         }
 
@@ -139,6 +140,7 @@ static int llama_model_load(const std::string & fname, std::vector<std::string> 
             return -2;
         }
     } catch (const std::exception & err) {
+        LLAMA_LOG_ERROR("%s: error loading model: %s\n", __func__, err.what());
         LOGGD("%s: error loading model: %s\n", __func__, err.what());
         std::string info = std::string("error loading model: ") + err.what() + " at [" + __FILE__ + ", " +  __FUNCTION__ + " ]\n";
         GGML_JNI_NOTIFY(info.c_str());
@@ -171,7 +173,6 @@ static struct llama_model * llama_model_load_from_file_impl(
         };
     }
 
-    LOGGD("enter %s", __func__ );
     llama_model * model = new llama_model(params);
 
     // create list of devices to use with this model
@@ -222,11 +223,14 @@ static struct llama_model * llama_model_load_from_file_impl(
         model->devices.clear();
         model->devices.push_back(main_gpu);
     }
+
     for (auto * dev : model->devices) {
         size_t free, total; // NOLINT
         ggml_backend_dev_memory(dev, &free, &total);
+        LLAMA_LOG_INFO("%s: using device %s (%s) - %zu MiB free\n", __func__, ggml_backend_dev_name(dev), ggml_backend_dev_description(dev), free/1024/1024);
         LOGGD("%s: using device %s (%s) - %zu MiB free\n", __func__, ggml_backend_dev_name(dev), ggml_backend_dev_description(dev), free/1024/1024);
     }
+
     const int status = llama_model_load(path_model, splits, *model, params);
     GGML_ASSERT(status <= 0);
     if (status < 0) {
@@ -270,6 +274,13 @@ struct llama_model * llama_model_load_from_splits(
         splits.push_back(paths[i]);
     }
     return llama_model_load_from_file_impl(splits.front(), splits, params);
+}
+
+void llama_model_save_to_file(const struct llama_model * model, const char * path_model) {
+    llama_model_saver ms(*model);
+    ms.add_kv_from_model();
+    ms.add_tensors_from_model();
+    ms.save(path_model);
 }
 
 //
@@ -357,3 +368,4 @@ const char * llama_print_system_info(void) {
 
     return s.c_str();
 }
+

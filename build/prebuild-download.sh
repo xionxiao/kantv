@@ -85,7 +85,7 @@ function check_and_download_androidndk()
             mkdir -p ${PROJECT_ROOT_PATH}/prebuilts/toolchain
         fi
 
-        wget --no-config --quiet --show-progress -O ${PROJECT_ROOT_PATH}/prebuilts/toolchain/android-ndk-r26c-linux.zip  https://dl.google.com/android/repository/android-ndk-r26c-linux.zip
+        wget --no-config --quiet --show-progress -O ${PROJECT_ROOT_PATH}/prebuilts/toolchain/android-ndk-r28-linux.zip  https://dl.google.com/android/repository/android-ndk-r28-linux.zip
         if [ $? -ne 0 ]; then
             printf "failed to download android ndk to %s \n" "${ANDROID_NDK}"
             exit 1
@@ -93,7 +93,7 @@ function check_and_download_androidndk()
 
         cd ${PROJECT_ROOT_PATH}/prebuilts/toolchain
 
-        unzip android-ndk-r26c-linux.zip
+        unzip android-ndk-r28-linux.zip
 
         cd ${PROJECT_ROOT_PATH}
 
