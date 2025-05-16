@@ -264,6 +264,14 @@ public class KANTVAIModelMgr {
                  199468800L
          );
 
+         addAIModel(KANTVAIModel.AIModelType.TYPE_LLM, "SmolVLM2-256M",
+                 "SmolVLM2-256M-Video-Instruct-f16.gguf", "mmproj-SmolVLM2-256M-Video-Instruct-f16.gguf",
+                 "https://huggingface.com/ggml-org/SmolVLM2-256M-Video-Instruct-GGUF/resolve/main/SmolVLM2-256M-Video-Instruct-f16.gguf?download=true",
+                 "https://huggingface.com/ggml-org/SmolVLM2-256M-Video-Instruct-GGUF/resolve/main/mmproj-SmolVLM2-256M-Video-Instruct-f16.gguf?download=true",
+                 327811552L,
+                 190033440L
+         );
+
 
          modelCounts = modelIndex;  //modelCounts is real counts of all AI models
          //initialize arrayModeName for UI AIResearchFragment.java to display all AI models(1 ASR model + all LLM models + others)
