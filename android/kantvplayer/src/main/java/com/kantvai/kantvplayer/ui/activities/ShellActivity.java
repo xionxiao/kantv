@@ -1,6 +1,7 @@
 package com.kantvai.kantvplayer.ui.activities;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -53,6 +54,8 @@ public class ShellActivity extends AppCompatActivity {
                 }
             }
         }
+
+        mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @NonNull

@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -361,8 +362,8 @@ public class MainActivity extends BaseMvpActivity<MainPresenter> implements Main
 
             if (fragmentName.contains("LLMResearchFragment")) {
                 KANTVLog.d(TAG, "release LLM resource");
-                llmFragment.release();
                 llmFragment.stopLLMInference();
+                llmFragment.release();
             }
 
             if (fragmentName.contains("AgentFragment")) {
@@ -402,7 +403,7 @@ public class MainActivity extends BaseMvpActivity<MainPresenter> implements Main
                 getFragmentTransaction().add(R.id.fragment_container, llmFragment).commit();
             } else {
                 getFragmentTransaction().show(llmFragment).commit();
-                llmFragment.reload(1);
+                llmFragment.reload(0);
             }
             previousFragment = llmFragment;
         } else if (clazz == AIResearchFragment.class) {

@@ -179,8 +179,6 @@ static int generate_response(mtmd_cli_context & ctx, common_sampler * smpl, int 
             break; // end of generation
         }
 
-        //LOG("%s", common_token_to_piece(ctx.lctx, token_id).c_str());
-        //fflush(stdout);
         const char * tmp = common_token_to_piece(ctx.lctx, token_id).c_str();
 #if (defined __ANDROID__) || (defined ANDROID)
         if (ggml_jni_is_valid_utf8(tmp)) {
@@ -222,8 +220,6 @@ static int eval_message(mtmd_cli_context & ctx, common_chat_msg & msg, bool add_
 #if (defined __ANDROID__) || (defined ANDROID)
     if (0 == inference_is_running_state()) {
         return AI_INFERENCE_INTERRUPTED;
-    } else {
-        GGML_JNI_NOTIFY("formatted_chat.prompt: %s\n", formatted_chat.prompt.c_str());
     }
 #endif
 
@@ -250,8 +246,7 @@ static int eval_message(mtmd_cli_context & ctx, common_chat_msg & msg, bool add_
     if (0 == inference_is_running_state()) {
         return AI_INFERENCE_INTERRUPTED;
     } else {
-        GGML_JNI_NOTIFY("starting image encoding & decoding, pls waiting(don't stop LLM inference "
-                        "before the first token can be seen, otherwise unexpected behaviour would happen)...\n");
+        GGML_JNI_NOTIFY("starting image encoding & decoding, pls waiting...\n\n");
     }
 #endif
 
@@ -310,7 +305,7 @@ int llava_inference_main(int argc, char ** argv, int backend_type) {
 
     mtmd_cli_context ctx(params);
     LOG("%s: loading model: %s\n", __func__, params.model.path.c_str());
-    GGML_JNI_NOTIFY("%s: loading model: %s\n", __func__, params.model.path.c_str());
+    LOGGD("%s: loading model: %s\n", __func__, params.model.path.c_str());
 
     bool is_single_turn = !params.prompt.empty() && !params.image.empty();
 
@@ -367,8 +362,6 @@ int llava_inference_main(int argc, char ** argv, int backend_type) {
 #if (defined __ANDROID__) || (defined ANDROID)
             if (0 == inference_is_running_state()) {
                 return AI_INFERENCE_INTERRUPTED;
-            } else {
-                GGML_JNI_NOTIFY("generate_reponse\n");
             }
 #endif
             int result = generate_response(ctx, smpl, n_predict);

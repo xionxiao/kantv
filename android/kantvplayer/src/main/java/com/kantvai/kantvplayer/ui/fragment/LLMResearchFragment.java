@@ -65,7 +65,7 @@
 
      private boolean mCameraInit = false;
 
-     private int facing = 1; //default is front camera
+     private int facing = 0; //default is back camera
 
      private SurfaceView cameraView;
 
@@ -77,8 +77,8 @@
      private String strUserInput = "what do you see in this image?";
 
      private void initLLMModels() {
-         LLMModelFullName = LLMModelMgr.getKANTVAIModelFromName("SmolVLM-500M").getName();
-         LLMModelURL = LLMModelMgr.getKANTVAIModelFromName("SmolVLM-500M").getUrl();
+         LLMModelFullName = LLMModelMgr.getKANTVAIModelFromName("SmolVLM2-256M").getName();
+         LLMModelURL = LLMModelMgr.getKANTVAIModelFromName("SmolVLM2-256M").getUrl();
      }
 
 
@@ -111,6 +111,7 @@
          mSettings.updateUILang((AppCompatActivity) getActivity());
          Resources res = mActivity.getResources();
          txtGGMLInfo = mActivity.findViewById(R.id.agentDeviceInfo);
+         txtLLMInfo = mActivity.findViewById(R.id.agentLLMInfo);
 
          mActivity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
          mActivity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -140,6 +141,7 @@
          cameraView = mActivity.findViewById(R.id.cameraview);
          cameraView.getHolder().setFormat(PixelFormat.RGBA_8888);
          cameraView.getHolder().addCallback(this);
+         cameraView.getHolder().setFixedSize(480, 640);
 
          Button buttonSwitchCamera = mActivity.findViewById(R.id.buttonSwitchCamera);
          buttonSwitchCamera.setOnClickListener(arg0 -> {
@@ -147,6 +149,7 @@
          });
 
          reload();
+         mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
          checkLLMModelExist();
          endTime = System.currentTimeMillis();
@@ -166,11 +169,14 @@
          facing = new_facing;
      }
 
-     public void reload(int front_camera) {
-         int new_facing = 1 - front_camera;
+     public void reload(int back_camera) {
+         int new_facing = 1 - back_camera;
          ggmljava.closeCamera();
          ggmljava.openCamera(new_facing);
          facing = new_facing;
+
+         initKANTVMgr();
+         txtLLMInfo.setText("");
      }
 
      @Override
@@ -320,17 +326,20 @@
                      return;
                  }
 
-                 //KANTVLog.j(TAG, "content:" + content);
-                 if (content.startsWith("unknown")) {
-
+                 if (content.startsWith("realtime-cam-reset")) {
+                     txtLLMInfo.setText("");
                  } else {
-                     {
-                         txtLLMInfo.append(content);
+                     txtLLMInfo.append(content);
+                     /*
+                     int offset = txtLLMInfo.getLineCount() * txtLLMInfo.getLineHeight();
+                     int screenHeight = KANTVUtils.getScreenHeight();
+                     int maxHeight = 100;
+                     KANTVLog.j(TAG, "offset:" + offset);
+                     KANTVLog.j(TAG, "screenHeight:" + screenHeight);
+                     if (offset > maxHeight - 5)
+                         txtLLMInfo.scrollTo(0, offset - maxHeight);
 
-                         int offset = txtLLMInfo.getLineCount() * txtLLMInfo.getLineHeight();
-                         if (offset > txtLLMInfo.getHeight())
-                             txtLLMInfo.scrollTo(0, offset - txtLLMInfo.getHeight());
-                     }
+                     */
                  }
              }
          }
@@ -382,6 +391,7 @@
      public void release() {
          finalizeCamera();
          finalizeKANTVMgr();
+         txtLLMInfo.setText("");
      }
 
      public void stopLLMInference() {
@@ -406,14 +416,13 @@
 
      private void setTextGGMLInfo(String LLMModelFullName) {
          txtGGMLInfo.setText("");
-         txtGGMLInfo.append(KANTVAIUtils.getDeviceInfo(mActivity, KANTVAIUtils.INFERENCE_LLM));
-         txtGGMLInfo.append("\n" + "LLM model:" + LLMModelFullName);
+         txtGGMLInfo.append(KANTVAIUtils.getDeviceInfo(mActivity, KANTVAIUtils.INFERENCE_LLMAVA));
+         txtGGMLInfo.append(".LLM model:" + LLMModelFullName);
          String timestamp = "";
          SimpleDateFormat fullDateFormat = new SimpleDateFormat("yyyy-MM-dd,HH:mm:ss");
          Date date = new Date(System.currentTimeMillis());
          timestamp = fullDateFormat.format(date);
-         txtGGMLInfo.append("\n");
-         //txtGGMLInfo.append(" running timestamp:" + timestamp);
+         txtGGMLInfo.append(".running timestamp:" + timestamp);
      }
 
      public static native int kantv_anti_remove_rename_this_file();
