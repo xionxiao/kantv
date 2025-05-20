@@ -7,11 +7,23 @@ set(CMAKE_VERBOSE_MAKEFILE          ON)
 set(CMAKE_CXX_STANDARD              20)
 set(CMAKE_CXX_STANDARD_REQUIRED     ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+
 # set it to ON to enable ggml-hexagon backend on Qualcomm SoC based Android phone
 # set it to OFF if target Android phone is not Qualcomm SoC based phone
-set(GGML_ENABLE_HEXAGON             ON)
+set(GGML_HEXAGON ON)
 
-set(GGML_ENABLE_STABLEDIFFUSION     OFF)
+if (GGML_HEXAGON)
+    #build apk for phone with qcom mobile SoC
+    message("set GGML_ENABLE_HEXAGON  to ON")
+    set(GGML_ENABLE_HEXAGON ON)
+else()
+    #build apk for phone with non-qcom mobile SoC
+    message("set GGML_ENABLE_HEXAGON  to OFF")
+    set(GGML_ENABLE_HEXAGON OFF)
+endif()
+
+set(STABLEDIFFUSION_ENABLE_HEXAGON     OFF)
 
 # self-contained build with internal customized/tailored QNN-SDK and Hexagon-SDK,
 # without download fully official QNN-SDK and Hexagon-SDK.
@@ -61,6 +73,7 @@ message("HEXAGON_SDK_PATH     : ${HEXAGON_SDK_PATH}")
 message("OpenCV_DIR           : ${OpenCV_DIR}")
 message("NCNN_DIR             : ${NCNN_DIR}")
 message("NCNN_SRC_DIR         : ${NCNN_SRC_DIR}")
+message("GGML_ENABLE_HEXAGON  : ${GGML_ENABLE_HEXAGON}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(DEBUG_FLAG "-DDEBUG -Wall")
@@ -103,17 +116,18 @@ if (GGML_ENABLE_HEXAGON)
             #refer to:https://github.com/kantv-ai/kantv/issues/287
             #set(OPT_FLAG " -O3 -march=armv8.7-a -flto -D_GNU_SOURCE -fvectorize -ffp-model=fast -fno-finite-math-only")
         else()
-            set(OPT_FLAG " -mcpu=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8")
+            set(OPT_FLAG " -O3 -march=armv8.7-a -ffp-model=fast -fno-finite-math-only")
         endif()
     else()
-        set(OPT_FLAG " -mcpu=cortex-a72 -mfloat-abi=hard -mfpu=neon-fp-armv8")
+        set(OPT_FLAG " -O3 -march=armv8.7-a -ffp-model=fast -fno-finite-math-only")
     endif()
 else()
-    #verified on Android phone equipped with mainstream high-end mobile SoC
-    set(OPT_FLAG " -O3 -march=armv8.7-a -mcpu=cortex-x1 -mtune=cortex-x1 ")
+    #TODO:verified on Android phone equipped without Qualcomm mobile SoC
+    set(OPT_FLAG " -O3 -march=armv8.7-a -ffp-model=fast -fno-finite-math-only")
 endif() #if (GGML_ENABLE_HEXAGON)
 
-message("OPT_FLAG:${OPT_FLAG}")
+message("OPT_FLAG:          ${OPT_FLAG}")
+message("DEBUG_FLAGS:       ${DEBUG_FLAG}")
 
 include_directories(${LLAMACPP_SRC_DIR}/ggml/include)
 include_directories(${LLAMACPP_SRC_DIR}/include)
@@ -153,6 +167,7 @@ file(GLOB HEXAGON_BACKEND_SRCS "${LLAMACPP_SRC_DIR}/ggml/src/ggml-hexagon/*.cpp"
 endif()
 
 aux_source_directory(${GGML_SRC_DIR}/stablediffusioncpp/          stablediffusioncpp)
+
 set(SOURCE_FILES
         ${LLAMACPP_SRC_DIR}/ggml/src/ggml.c
         ${LLAMACPP_SRC_DIR}/ggml/src/ggml-alloc.c
@@ -267,23 +282,31 @@ add_definitions(-D_LIBCXXABI_EXCEPTIONS)
 add_link_options( "-lc++_shared" )
 
 if (GGML_ENABLE_HEXAGON)
-    if (GGML_ENABLE_STABLEDIFFUSION)
+    if (STABLEDIFFUSION_ENABLE_HEXAGON)
+        message("ggml_use_hexagon and sd_use_hexagon")
         set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -DGGML_USE_HEXAGON -DSD_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGGML_USE_HEXAGON -DSD_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DGGML_USE_HEXAGON -DSD_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DGGML_USE_HEXAGON -DSD_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
     else()
+        message("ggml_use_hexagon")
         set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -DGGML_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGGML_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DGGML_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DGGML_USE_HEXAGON ${DEBUG_FLAG} ${OPT_FLAG}")
     endif()
 else()
+    message("no ggml_use_hexagon")
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}    ${DEBUG_FLAG} ${OPT_FLAG}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${DEBUG_FLAG} ${OPT_FLAG}")
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}  ${DEBUG_FLAG} ${OPT_FLAG}")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}  ${DEBUG_FLAG} ${OPT_FLAG}")
 endif()
+
+message("CMAKE_C_FLAGS:                 ${CMAKE_C_FLAGS}")
+message("CMAKE_CXX_FLAGS:               ${CMAKE_CXX_FLAGS}")
+message("CMAKE_C_FLAGS_RELEASE:         ${CMAKE_C_FLAGS_RELEASE}")
+message("CMAKE_CXX_FLAGS_RELEASE:       ${CMAKE_CXX_FLAGS_RELEASE}")
 
 find_library(LOG_LIB log)
 set(CMAKE_MODULE_PATH "${OpenCV_DIR};${CMAKE_MODULE_PATH}")
