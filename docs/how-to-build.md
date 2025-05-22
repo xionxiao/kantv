@@ -54,7 +54,10 @@ build the entire project by Android Studio IDE
 ```
   . build/envsetup.sh
   lunch 1
-  ./build/build-all.sh android
+  # for Qualcomm devices with ggml-hexagon
+  ./build/build-all.sh android_qcom
+  # for non Qualcomm devices without ggml-hexagon
+  ./build/build-all.sh android_non_qcom
 ```
 
 #### How to enable/disable debug build
